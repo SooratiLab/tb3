@@ -4,7 +4,38 @@ This document explains how to download and run setup scripts for different envir
 
 ## Available Configurations
 
-### 1. ROS2 Humble with Gazebo
+### 1. ROS2 Humble with Gazebo and TurtleBot3 (Recommended)
+
+Download and run the TurtleBot3 setup script:
+
+```bash
+# Install wget if not available (for minimal Docker images)
+apt update && apt install -y wget
+
+# Download the script
+wget https://git.soton.ac.uk/aoa1v22/comp2011/-/raw/main/scripts/setup_u22_tb3.sh
+
+# Make it executable
+chmod +x setup_u22_tb3.sh
+
+# Run the script
+bash setup_u22_tb3.sh
+```
+
+**What this installs:**
+- ROS2 Humble
+- Gazebo simulator
+- TurtleBot3 packages and simulation workspace (~/turtlebot3)
+- Python virtual environment (comp2011 in ~/envs/comp2011)
+- TurtleBot3 auto-completion and environment scripts (added to ~/.bashrc)
+
+**TurtleBot3 Features:**
+- Workspace created at `~/turtlebot3` with simulation packages
+- Environment variable `TURTLEBOT3_MODEL=burger` set in ~/.bashrc
+- Auto-completion for TurtleBot3 commands
+- Test command: `test_tb3` launches TurtleBot3 in empty world (available after opening a new terminal)
+
+### 2. ROS2 Humble with Gazebo (Minimal)
 
 Download and run the setup script:
 
@@ -13,7 +44,7 @@ Download and run the setup script:
 apt update && apt install -y wget
 
 # Download the script
-wget https://raw.githubusercontent.com/dhavids/python_env/main/scripts/setup_u22_gazebo.sh
+wget https://git.soton.ac.uk/aoa1v22/comp2011/-/raw/main/scripts/setup_u22_gazebo.sh
 
 # Make it executable
 chmod +x setup_u22_gazebo.sh
@@ -25,7 +56,7 @@ bash setup_u22_gazebo.sh
 **What this installs:**
 - ROS2 Humble
 - Gazebo simulator
-- Python virtual environment (e-swarm)
+- Python virtual environment (comp2011 in ~/envs/comp2011)
 
 ---
 
@@ -38,7 +69,7 @@ docker run --name humble -dit --gpus all \
   -e LIBGL_ALWAYS_SOFTWARE=1 \
   -e SVGA_VGPU10=0 \
   -v /path/to/marl:/root/marl \
-  -v /path/to/e-swarm:/root/e-swarm \
+  -v /path/to/envs:/root/envs \
   ubuntu22
 ```
 

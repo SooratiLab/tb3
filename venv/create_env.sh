@@ -1,9 +1,9 @@
 #!/bin/bash
-# filepath: /home/u20/argos/python_env/create_env.sh
+# filepath: /home/humble/comp2011/venv/create_env.sh
 
 set -e  # Exit on any error
 
-# Get the directory where this script is located (python_env)
+# Get the directory where this script is located (venv folder inside comp2011)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_FOLDER="$(dirname "$SCRIPT_DIR")"
 PARENT_FOLDER="$(dirname "$BASE_FOLDER")"
@@ -51,37 +51,20 @@ is_package_installed() {
     return $?
 }
 
-# Check if e-swarm environment exists in parent folder
-E_SWARM_PATH="$PARENT_FOLDER/e-swarm"
-SCRATCH_E_SWARM_PATH="/scratch/aoa1v22/envs/e-swarm"
-HOME_E_SWARM_PATH="$HOME/e-swarm"
+# Check if comp2011 environment exists in envs folder
+ENVS_COMP2011_PATH="$HOME/envs/comp2011"
 
 # Check if valid environment exists (has bin/activate)
-if [[ -f "$E_SWARM_PATH/bin/activate" ]]; then
-    echo "Found e-swarm environment at: $E_SWARM_PATH"
-    VENV_PATH="$E_SWARM_PATH"
-elif [[ -f "$SCRATCH_E_SWARM_PATH/bin/activate" ]]; then
-    echo "Found e-swarm environment at: $SCRATCH_E_SWARM_PATH"
-    VENV_PATH="$SCRATCH_E_SWARM_PATH"
-elif [[ -f "$HOME_E_SWARM_PATH/bin/activate" ]]; then
-    echo "Found e-swarm environment at: $HOME_E_SWARM_PATH"
-    VENV_PATH="$HOME_E_SWARM_PATH"
+if [[ -f "$ENVS_COMP2011_PATH/bin/activate" ]]; then
+    echo "Found comp2011 environment at: $ENVS_COMP2011_PATH"
+    VENV_PATH="$ENVS_COMP2011_PATH"
 else
     # Need to create environment
-    echo "e-swarm environment not found. Creating new environment..."
-    
-    # Determine where to create the environment
-    if [[ -d "/scratch" ]]; then
-        mkdir -p "/scratch/aoa1v22/envs"
-        VENV_PATH="/scratch/aoa1v22/envs/e-swarm"
-        echo "Will create environment at: $VENV_PATH"
-    elif [[ "$PARENT_FOLDER" == "/" || "$PARENT_FOLDER" == "/home" ]]; then
-        # If parent is root or /home, use home directory instead
-        VENV_PATH="$HOME/e-swarm"
-        echo "Will create environment at: $VENV_PATH"
-    else
-        VENV_PATH="$PARENT_FOLDER/e-swarm"
-        echo "Will create environment at: $VENV_PATH"
+    echo "comp2011 environment not found. Creating new environment..."
+    # Use ~/envs/comp2011 for all other cases
+    mkdir -p "$HOME/envs"
+    VENV_PATH="$HOME/envs/comp2011"
+    echo "Will create environment at: $VENV_PATH"
     fi
     
     # Find suitable Python version
@@ -123,7 +106,7 @@ echo
 # Check if base folder has setup.py
 SETUP_PY_PATH="$BASE_FOLDER/setup.py"
 if [[ ! -f "$SETUP_PY_PATH" ]]; then
-    echo "setup.py not found in base folder. Copying from python_env..."
+    echo "setup.py not found in base folder. Copying from comp2011..."
     cp "$SCRIPT_DIR/setup.py" "$SETUP_PY_PATH"
 fi
 echo
@@ -162,70 +145,27 @@ fi
 echo "Added $BASE_FOLDER to sys.path"
 echo
 
-# Install mappo if it exists
-MAPPO_PATH="$BASE_FOLDER/mappo"
-if [[ -d "$MAPPO_PATH" ]]; then
-    if is_package_installed "onpolicy"; then
-        echo "Mappo package 'onpolicy' is already installed. Skipping..."
-    else
-        echo "Installing mappo in editable mode..."
-        cd "$MAPPO_PATH"
-        if [[ -f "setup.py" ]]; then
-            pip install -e .
-        else
-            echo "Warning: mappo directory exists but no setup.py found"
-        fi
-    fi
-    echo
-fi
+# # Install requirements based on Python version
+# cd "$SCRIPT_DIR"
+# PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+# echo "Python version in environment: $PYTHON_VERSION"
 
-# Install requirements based on Python version
-cd "$SCRIPT_DIR"
-PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-echo "Python version in environment: $PYTHON_VERSION"
+# REQ_FILE=""
+# if [[ -f "requirements/comp2011-python-$PYTHON_VERSION.txt" ]]; then
+#     REQ_FILE="requirements/comp2011-python-$PYTHON_VERSION.txt"
+# elif [[ -f "requirements/tb3-python-$PYTHON_VERSION.txt" ]]; then
+#     REQ_FILE="requirements/tb3-python-$PYTHON_VERSION.txt"
+#     echo "Warning: Using tb3 requirements for Python $PYTHON_VERSION"
+# elif [[ -f "requirements/e-swarm-python-3.8.txt" ]]; then
+#     REQ_FILE="requirements/e-swarm-python-3.8.txt"
+#     echo "Warning: Using Python 3.8 requirements for Python $PYTHON_VERSION"
+# else
+#     echo "Error: No suitable requirements file found!"
+#     exit 1
+# fi
 
-REQ_FILE=""
-if [[ -f "requirements/e-swarm-python-$PYTHON_VERSION.txt" ]]; then
-    REQ_FILE="requirements/e-swarm-python-$PYTHON_VERSION.txt"
-elif [[ -f "requirements/e-swarm-python-3.8.txt" ]]; then
-    REQ_FILE="requirements/e-swarm-python-3.8.txt"
-    echo "Warning: Using Python 3.8 requirements for Python $PYTHON_VERSION"
-else
-    echo "Error: No suitable requirements file found!"
-    exit 1
-fi
-
-echo "Installing requirements from: $REQ_FILE"
-
-# Check if pyglet is in requirements and handle version
-if grep -qE "^pyglet" "$REQ_FILE"; then
-    echo "Found pyglet in requirements. Ensuring version 1.5.27..."
-    # Install requirements excluding pyglet first
-    grep -vE "^pyglet" "$REQ_FILE" > /tmp/requirements_no_pyglet.txt
-    if [[ -s /tmp/requirements_no_pyglet.txt ]]; then
-        echo "Installing other requirements first..."
-        pip install -r /tmp/requirements_no_pyglet.txt
-    fi
-    # Install specific pyglet version
-    echo "Installing pyglet==1.5.27..."
-    pip install --no-deps pyglet==1.5.27
-    rm -f /tmp/requirements_no_pyglet.txt
-else
-    # No pyglet in requirements, install normally
-    pip install -r "$REQ_FILE"
-fi
-
-# Double-check pyglet version if it's installed
-if pip show pyglet &> /dev/null; then
-    CURRENT_PYGLET=$(pip show pyglet | grep "^Version:" | awk '{print $2}')
-    if [[ "$CURRENT_PYGLET" != "1.5.27" ]]; then
-        echo "Pyglet version is $CURRENT_PYGLET, forcing downgrade to 1.5.27..."
-        pip install --force-reinstall --no-deps pyglet==1.5.27
-    else
-        echo "Pyglet version 1.5.27 confirmed."
-    fi
-fi
-echo
+# echo "Installing requirements from: $REQ_FILE"
+# pip install -r "$REQ_FILE"
 
 echo "Environment setup complete!"
 echo "Virtual environment path: $VENV_PATH"
@@ -233,21 +173,21 @@ echo "To activate manually: source $VENV_PATH/bin/activate"
 echo
 
 # Fix permissions to prevent Docker from locking files (if running as root in Docker)
-if [ "$EUID" -eq 0 ] && [[ -d "$VENV_PATH" ]]; then
-    echo "Fixing permissions on virtual environment..."
-    chmod -R 755 "$VENV_PATH" 2>/dev/null || true
-    # Try to match ownership with a mounted volume (if available)
-    if [[ -d "$BASE_FOLDER" ]]; then
-        OWNER_UID=$(stat -c '%u' "$BASE_FOLDER" 2>/dev/null || echo "")
-        OWNER_GID=$(stat -c '%g' "$BASE_FOLDER" 2>/dev/null || echo "")
-        if [[ -n "$OWNER_UID" && "$OWNER_UID" != "0" ]]; then
-            echo "Setting ownership to UID:GID $OWNER_UID:$OWNER_GID to match host user..."
-            chown -R "$OWNER_UID:$OWNER_GID" "$VENV_PATH" 2>/dev/null || true
-        fi
-    fi
-    echo "Permissions updated."
-fi
-echo
+# if [ "$EUID" -eq 0 ] && [[ -d "$VENV_PATH" ]]; then
+#     echo "Fixing permissions on virtual environment..."
+#     chmod -R 755 "$VENV_PATH" 2>/dev/null || true
+#     # Try to match ownership with a mounted volume (if available)
+#     if [[ -d "$BASE_FOLDER" ]]; then
+#         OWNER_UID=$(stat -c '%u' "$BASE_FOLDER" 2>/dev/null || echo "")
+#         OWNER_GID=$(stat -c '%g' "$BASE_FOLDER" 2>/dev/null || echo "")
+#         if [[ -n "$OWNER_UID" && "$OWNER_UID" != "0" ]]; then
+#             echo "Setting ownership to UID:GID $OWNER_UID:$OWNER_GID to match host user..."
+#             chown -R "$OWNER_UID:$OWNER_GID" "$VENV_PATH" 2>/dev/null || true
+#         fi
+#     fi
+#     echo "Permissions updated."
+# fi
+# echo
 
 # Return to base folder
 cd "$BASE_FOLDER"

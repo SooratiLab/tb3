@@ -65,7 +65,6 @@ else
     mkdir -p "$HOME/envs"
     VENV_PATH="$HOME/envs/comp2011"
     echo "Will create environment at: $VENV_PATH"
-    fi
     
     # Find suitable Python version
     PYTHON_CMD=""

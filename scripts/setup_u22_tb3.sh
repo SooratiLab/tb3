@@ -102,9 +102,7 @@ bash "$SETUP_DIR/gazebo.sh"
 # Install TurtleBot3
 echo ""
 echo "Setting up TurtleBot3..."
-export FROM_SETUP_SCRIPT=1
 bash "$SETUP_DIR/tb3.sh"
-unset FROM_SETUP_SCRIPT
 
 # Create Python virtual environment
 echo ""

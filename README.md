@@ -75,7 +75,7 @@ After installation, these commands are available:
 ## Installation Locations
 
 - **comp2011 repository**: `~/comp2011`
-- **TurtleBot3 workspace**: `~/turtlebot3`
+- **TurtleBot3 workspace**: `~/turtlebot3_ws`
 - **Python environment**: `~/envs/comp2011`
 
 ## Requirements

@@ -4,7 +4,25 @@ This repository contains automated setup scripts and tools for AICE2011 TurtleBo
 
 ## Quick Start
 
-### One-Command Setup
+### Option 1: Prebuilt Virtual Machine (OVA) - Fastest
+
+A prebuilt Ubuntu 22.04 VM with ROS2 Humble, Gazebo, and TurtleBot3 already installed is available:
+
+**Download:** [aice2011_ovf.ova](https://sotonac-my.sharepoint.com/:f:/r/personal/aoa1v22_soton_ac_uk/Documents/Documents/P_fls/Lectures%20and%20Demonstration/UoS%20Demonstration/AICE2011/AY25_26/Files/aice2011_ovf?csf=1&web=1&e=yDTyPo)
+
+**Link Valid until:** March 31, 2026
+
+**How to use:**
+1. Import the `.ova` file into VirtualBox or VMware
+2. Start the VM and log in
+3. Open a terminal and run `test_tb3` to launch TurtleBot3 simulation
+4. Run `tb3_teleop` in another terminal to control the Turtlebot
+
+**VM Credentials:**
+- Username: `aice`
+- Password: `2011`
+
+### Option 2: One-Command Setup on Ubuntu 22.04
 
 For a complete TurtleBot3 simulation environment on Ubuntu 22.04:
 

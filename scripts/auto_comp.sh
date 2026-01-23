@@ -40,6 +40,9 @@ alias tb3_empty='ros2 launch turtlebot3_gazebo empty_world.launch.py'
 alias tb3_world='ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py'
 alias tb3_house='ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py'
 
+# TurtleBot3 teleoperation
+alias tb3_teleop='ros2 run turtlebot3_teleop teleop_keyboard'
+
 # -------------------------------
 # Gazebo Management Commands
 # -------------------------------

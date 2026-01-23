@@ -29,61 +29,6 @@ bash setup_u22_gazebo.sh
 
 ---
 
-### 2. ROS2 Humble with ARGoS
-
-Download and run the setup script:
-
-```bash
-# Install wget if not available (for minimal Docker images)
-apt update && apt install -y wget
-
-# Download the script
-wget https://raw.githubusercontent.com/dhavids/python_env/main/scripts/setup_u22_argos.sh
-
-# Make it executable
-chmod +x setup_u22_argos.sh
-
-# Run the script
-bash setup_u22_argos.sh
-```
-
-**What this installs:**
-- ROS2 Humble
-- ARGoS3 simulator
-- Python virtual environment (e-swarm)
-
----
-
-### 3. Full MARL Setup (ROS2 + Gazebo + ARGoS)
-
-Download and run the complete setup script:
-
-```bash
-# Install wget if not available (for minimal Docker images)
-apt update && apt install -y wget
-
-# Download the script
-wget https://raw.githubusercontent.com/dhavids/python_env/main/scripts/setup_u22.sh
-
-# Make it executable
-chmod +x setup_u22.sh
-
-# Run the script
-bash setup_u22.sh
-```
-
-**What this installs:**
-- ROS2 Humble
-- Gazebo simulator
-- ARGoS3 simulator
-- All project repositories (argos_il, turtlebot3_il, translator, etc.)
-- Python virtual environment (e-swarm)
-- Bash auto-completion utilities
-
-**Note:** This script requires SSH access to private repositories. You'll need to set up your SSH key if prompted.
-
----
-
 ## Docker-Specific Setup
 
 If running in Docker with GPU support for Gazebo, add these environment variables to avoid rendering issues:
@@ -107,10 +52,10 @@ export SVGA_VGPU10=0
 
 ## Notes
 
-- All scripts automatically clone the `python_env` repository to access the required setup scripts
+- All scripts automatically clone the `comp2011` repository to access the required setup scripts
 - Scripts detect if running in Docker (no sudo) or on a VM/bare metal (with sudo)
 - Essential build tools and dependencies are installed automatically
-- If `python_env` already exists, it will be updated from the repository
+- If `comp2011` already exists, it will be updated from the repository
 
 ## Requirements
 

@@ -30,6 +30,17 @@ test_tb3
 
 This launches TurtleBot3 in an empty Gazebo world.
 
+To test robot movement, open two terminals:
+```bash
+# Terminal 1: Launch simulation
+tb3_empty
+
+# Terminal 2: Control the robot with keyboard
+tb3_teleop
+```
+
+Use the keyboard controls (W/A/S/D/X) to move the TurtleBot3 around.
+
 ## What's Included
 
 ### Setup Scripts (`scripts/`)
@@ -60,6 +71,9 @@ After installation, these commands are available:
 - `tb3_empty` - Launch empty world
 - `tb3_world` - Launch TurtleBot3 world
 - `tb3_house` - Launch house world
+
+### Robot Control
+- `tb3_teleop` - Control robot with keyboard (use W/A/S/D/X keys)
 
 ### Process Management
 - `tb3_kill` - Stop Gazebo processes

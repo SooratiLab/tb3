@@ -13,7 +13,7 @@ Download and run the TurtleBot3 setup script:
 apt update && apt install -y wget
 
 # Download the script
-wget https://git.soton.ac.uk/aoa1v22/comp2011/-/raw/main/scripts/setup_u22_tb3.sh
+wget https://git.soton.ac.uk/aoa1v22/aice2011/-/raw/main/scripts/setup_u22_tb3.sh
 
 # Make it executable
 chmod +x setup_u22_tb3.sh
@@ -26,7 +26,7 @@ bash setup_u22_tb3.sh
 - ROS2 Humble
 - Gazebo simulator
 - TurtleBot3 packages and simulation workspace (~/turtlebot3)
-- Python virtual environment (comp2011 in ~/envs/comp2011)
+- Python virtual environment (aice2011 in ~/envs/aice2011)
 - TurtleBot3 auto-completion and environment scripts (added to ~/.bashrc)
 
 **TurtleBot3 Features:**
@@ -44,7 +44,7 @@ Download and run the setup script:
 apt update && apt install -y wget
 
 # Download the script
-wget https://git.soton.ac.uk/aoa1v22/comp2011/-/raw/main/scripts/setup_u22_gazebo.sh
+wget https://git.soton.ac.uk/aoa1v22/aice2011/-/raw/main/scripts/setup_u22_gazebo.sh
 
 # Make it executable
 chmod +x setup_u22_gazebo.sh
@@ -56,7 +56,7 @@ bash setup_u22_gazebo.sh
 **What this installs:**
 - ROS2 Humble
 - Gazebo simulator
-- Python virtual environment (comp2011 in ~/envs/comp2011)
+- Python virtual environment (aice2011 in ~/envs/aice2011)
 
 ---
 
@@ -83,10 +83,10 @@ export SVGA_VGPU10=0
 
 ## Notes
 
-- All scripts automatically clone the `comp2011` repository to access the required setup scripts
+- All scripts automatically clone the `aice2011` repository to access the required setup scripts
 - Scripts detect if running in Docker (no sudo) or on a VM/bare metal (with sudo)
 - Essential build tools and dependencies are installed automatically
-- If `comp2011` already exists, it will be updated from the repository
+- If `aice2011` already exists, it will be updated from the repository
 
 ## Requirements
 

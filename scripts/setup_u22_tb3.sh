@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script sets up ROS2 Humble, Gazebo and TurtleBot3 by cloning the comp2011 repository
+# This script sets up ROS2 Humble, Gazebo and TurtleBot3 by cloning the aice2011 repository
 # and using its setup scripts
 # Usage: bash setup_u22_tb3.sh
 
@@ -14,8 +14,8 @@ else
 fi
 
 WORKSPACE_DIR="$HOME"
-PYTHON_ENV_REPO="https://git.soton.ac.uk/aoa1v22/comp2011.git"
-PYTHON_ENV_DIR="$WORKSPACE_DIR/comp2011"
+PYTHON_ENV_REPO="https://git.soton.ac.uk/aoa1v22/aice2011.git"
+PYTHON_ENV_DIR="$WORKSPACE_DIR/aice2011"
 
 echo "================================"
 echo "ROS2 + Gazebo Setup"
@@ -33,29 +33,29 @@ echo "Installing essential build tools and libraries..."
 $SUDO apt install -y build-essential cmake git wget curl unzip pkg-config \
     libssl-dev libffi-dev python3-dev python3-pip python3-venv
 
-# Clone or update comp2011 repository
+# Clone or update aice2011 repository
 echo ""
 echo "================================"
-echo "Setting up comp2011 repository"
+echo "Setting up aice2011 repository"
 echo "================================"
 
 if [ -d "$PYTHON_ENV_DIR/.git" ]; then
-    echo "[INFO] comp2011 repository exists, updating..."
+    echo "[INFO] aice2011 repository exists, updating..."
     cd "$PYTHON_ENV_DIR"
     git fetch origin
     git pull origin main || echo "[WARNING] Failed to pull updates"
     cd "$WORKSPACE_DIR"
 elif [ -d "$PYTHON_ENV_DIR" ]; then
-    echo "[WARNING] comp2011 directory exists but is not a git repo, removing..."
+    echo "[WARNING] aice2011 directory exists but is not a git repo, removing..."
     rm -rf "$PYTHON_ENV_DIR"
-    echo "Cloning comp2011 repository..."
+    echo "Cloning aice2011 repository..."
     git clone "$PYTHON_ENV_REPO" "$PYTHON_ENV_DIR"
 else
-    echo "Cloning comp2011 repository..."
+    echo "Cloning aice2011 repository..."
     git clone "$PYTHON_ENV_REPO" "$PYTHON_ENV_DIR"
 fi
 
-echo "[OK] comp2011 repository ready"
+echo "[OK] aice2011 repository ready"
 
 # Verify required setup scripts exist
 echo ""
@@ -83,7 +83,7 @@ if [ ${#MISSING_SCRIPTS[@]} -gt 0 ]; then
         echo "  - $script"
     done
     echo ""
-    echo "Please check the comp2011 repository structure."
+    echo "Please check the aice2011 repository structure."
     exit 1
 fi
 
@@ -148,7 +148,7 @@ echo "This will launch TurtleBot3 in an empty Gazebo world."
 echo ""
 echo "Python virtual environment has been created."
 echo "To activate it:"
-echo "  source ~/envs/comp2011/bin/activate"
+echo "  source ~/envs/aice2011/bin/activate"
 echo ""
 echo "To use ROS2 manually:"
 echo "  source /opt/ros/humble/setup.bash"

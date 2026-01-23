@@ -16,7 +16,7 @@ setup(
     name=package_name,
     version="1.0",
     description=f"Local development setup for {folder_name}",
-    author="comp2011 Team",
+    author="aice2011 Team",
     packages=find_packages(),
     zip_safe=False,
 )

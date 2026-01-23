@@ -1,9 +1,9 @@
 #!/bin/bash
-# filepath: /home/humble/comp2011/venv/create_env.sh
+# filepath: /home/humble/aice2011/venv/create_env.sh
 
 set -e  # Exit on any error
 
-# Get the directory where this script is located (venv folder inside comp2011)
+# Get the directory where this script is located (venv folder inside aice2011)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_FOLDER="$(dirname "$SCRIPT_DIR")"
 PARENT_FOLDER="$(dirname "$BASE_FOLDER")"
@@ -51,19 +51,19 @@ is_package_installed() {
     return $?
 }
 
-# Check if comp2011 environment exists in envs folder
-ENVS_COMP2011_PATH="$HOME/envs/comp2011"
+# Check if aice2011 environment exists in envs folder
+ENVS_AICE2011_PATH="$HOME/envs/aice2011"
 
 # Check if valid environment exists (has bin/activate)
-if [[ -f "$ENVS_COMP2011_PATH/bin/activate" ]]; then
-    echo "Found comp2011 environment at: $ENVS_COMP2011_PATH"
-    VENV_PATH="$ENVS_COMP2011_PATH"
+if [[ -f "$ENVS_AICE2011_PATH/bin/activate" ]]; then
+    echo "Found aice2011 environment at: $ENVS_AICE2011_PATH"
+    VENV_PATH="$ENVS_AICE2011_PATH"
 else
     # Need to create environment
-    echo "comp2011 environment not found. Creating new environment..."
-    # Use ~/envs/comp2011 for all other cases
+    echo "aice2011 environment not found. Creating new environment..."
+    # Use ~/envs/aice2011 for all other cases
     mkdir -p "$HOME/envs"
-    VENV_PATH="$HOME/envs/comp2011"
+    VENV_PATH="$HOME/envs/aice2011"
     echo "Will create environment at: $VENV_PATH"
     
     # Find suitable Python version
@@ -105,7 +105,7 @@ echo
 # Check if base folder has setup.py
 SETUP_PY_PATH="$BASE_FOLDER/setup.py"
 if [[ ! -f "$SETUP_PY_PATH" ]]; then
-    echo "setup.py not found in base folder. Copying from comp2011..."
+    echo "setup.py not found in base folder. Copying from aice2011..."
     cp "$SCRIPT_DIR/setup.py" "$SETUP_PY_PATH"
 fi
 echo
@@ -150,8 +150,8 @@ echo
 # echo "Python version in environment: $PYTHON_VERSION"
 
 # REQ_FILE=""
-# if [[ -f "requirements/comp2011-python-$PYTHON_VERSION.txt" ]]; then
-#     REQ_FILE="requirements/comp2011-python-$PYTHON_VERSION.txt"
+# if [[ -f "requirements/aice2011-python-$PYTHON_VERSION.txt" ]]; then
+#     REQ_FILE="requirements/aice2011-python-$PYTHON_VERSION.txt"
 # elif [[ -f "requirements/tb3-python-$PYTHON_VERSION.txt" ]]; then
 #     REQ_FILE="requirements/tb3-python-$PYTHON_VERSION.txt"
 #     echo "Warning: Using tb3 requirements for Python $PYTHON_VERSION"

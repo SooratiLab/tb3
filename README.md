@@ -1,6 +1,6 @@
-# COMP2011 - TurtleBot3 Simulation Environment
+# AICE2011 - TurtleBot3 Simulation Environment
 
-This repository contains automated setup scripts and tools for COMP2011 TurtleBot3 simulation environments using ROS2 Humble and Gazebo.
+This repository contains automated setup scripts and tools for AICE2011 TurtleBot3 simulation environments using ROS2 Humble and Gazebo.
 
 ## Quick Start
 
@@ -9,7 +9,7 @@ This repository contains automated setup scripts and tools for COMP2011 TurtleBo
 For a complete TurtleBot3 simulation environment on Ubuntu 22.04:
 
 ```bash
-wget https://git.soton.ac.uk/aoa1v22/comp2011/-/raw/main/scripts/setup_u22_tb3.sh
+wget https://git.soton.ac.uk/aoa1v22/aice2011/-/raw/main/scripts/setup_u22_tb3.sh
 chmod +x setup_u22_tb3.sh
 bash setup_u22_tb3.sh
 ```
@@ -18,7 +18,7 @@ This will install:
 - ROS2 Humble
 - Gazebo simulator
 - TurtleBot3 packages and simulation workspace
-- Python virtual environment (comp2011)
+- Python virtual environment (aice2011)
 - Bash aliases and auto-completion
 
 ### Testing Your Installation
@@ -58,7 +58,7 @@ Use the keyboard controls (W/A/S/D/X) to move the TurtleBot3 around.
 
 ### Python Environment (`venv/`)
 
-- **`create_env.sh`** - Creates Python virtual environment at `~/envs/comp2011`
+- **`create_env.sh`** - Creates Python virtual environment at `~/envs/aice2011`
 - **`gen_requirements.py`** - Generates requirements files
 - **`requirements/`** - Python dependencies for different Python versions
 
@@ -88,9 +88,9 @@ After installation, these commands are available:
 
 ## Installation Locations
 
-- **comp2011 repository**: `~/comp2011`
+- **aice2011 repository**: `~/aice2011`
 - **TurtleBot3 workspace**: `~/turtlebot3_ws`
-- **Python environment**: `~/envs/comp2011`
+- **Python environment**: `~/envs/aice2011`
 
 ## Requirements
 
@@ -107,7 +107,7 @@ Detailed setup instructions and troubleshooting can be found in:
 ## Repository Structure
 
 ```
-comp2011/
+aice2011/
 ├── README.md              # This file
 ├── scripts/               # Setup and management scripts
 │   ├── README.md         # Setup documentation
@@ -129,4 +129,4 @@ For issues or questions:
 1. Check [`scripts/README.md`](scripts/README.md) for detailed documentation
 2. Ensure all installation steps completed successfully
 3. Verify ROS2 and Gazebo are properly installed: `ros2 --version` and `gazebo --version`
-4. Report issues at: https://git.soton.ac.uk/aoa1v22/comp2011/-/issues
+4. Report issues at: https://git.soton.ac.uk/aoa1v22/aice2011/-/issues

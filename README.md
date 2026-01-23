@@ -8,7 +8,7 @@ This repository contains automated setup scripts and tools for AICE2011 TurtleBo
 
 A prebuilt Ubuntu 22.04 VM with ROS2 Humble, Gazebo, and TurtleBot3 already installed is available:
 
-**Download:** [aice2011_ovf](https://sotonac-my.sharepoint.com/:f:/r/personal/aoa1v22_soton_ac_uk/Documents/Documents/P_fls/Lectures%20and%20Demonstration/UoS%20Demonstration/AICE2011/AY25_26/Files/aice2011_ovf?csf=1&web=1&e=yDTyPo)
+**Download:** [aice2011_ovf](https://sotonac-my.sharepoint.com/:f:/g/personal/aoa1v22_soton_ac_uk/IgDiy2JYCunCQr5a98dQKlvBAWQLB-vzB4W8NceRu4ofYsg?e=vRCPVp)
 
 **Link Valid until:** March 31, 2026
 

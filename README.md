@@ -115,3 +115,4 @@ For issues or questions:
 1. Check [`scripts/README.md`](scripts/README.md) for detailed documentation
 2. Ensure all installation steps completed successfully
 3. Verify ROS2 and Gazebo are properly installed: `ros2 --version` and `gazebo --version`
+4. Report issues at: https://git.soton.ac.uk/aoa1v22/comp2011/-/issues

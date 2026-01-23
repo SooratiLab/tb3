@@ -9,18 +9,20 @@ SCRIPT_DIR="$(dirname "${SCRIPT_PATH}")"
 
 # Workspace root = parent of parent of this script
 BASE_DIR="$(realpath "${SCRIPT_DIR}/../..")"
-DEV_WS="${BASE_DIR}/turtlebot3_il/dev_ws"
+
+# TurtleBot3 workspace - always in home directory
+TB3_WS="$HOME/turtlebot3_ws"
 
 # Expose to caller
 export BASE_DIR
-export DEV_WS
+export TB3_WS
 
 # echo "[TB3_ENV] Workspace detected at: ${BASE_DIR}"
 
 # Check workspace
-if [[ ! -d "${DEV_WS}" ]]; then
-    echo "[TB3_ENV] ERROR: dev_ws not found at ${DEV_WS}"
-    return 1
+if [[ ! -d "${TB3_WS}" ]]; then
+    echo "[TB3_ENV] WARNING: TurtleBot3 workspace not found at ${TB3_WS}"
+    echo "[TB3_ENV] Please run setup_u22_tb3.sh to install TurtleBot3"
 fi
 
 # ROS_DOMAIN_ID and GZ_PARTITION should be set by the calling environment
@@ -53,18 +55,18 @@ fi
 
 source /usr/share/gazebo/setup.sh
 
-# Source workspace
-if [[ -f "${DEV_WS}/install/setup.bash" ]]; then
-    source "${DEV_WS}/install/setup.bash"
+# Source TurtleBot3 workspace
+if [[ -f "${TB3_WS}/install/setup.bash" ]]; then
+    source "${TB3_WS}/install/setup.bash"
 else
-    echo "[TB3_ENV] WARNING: Workspace is not built yet. Build with 'tb3_rebuild'."
+    echo "[TB3_ENV] WARNING: TurtleBot3 workspace not built yet at ${TB3_WS}"
 fi
 
 # TB3 Model
 export TURTLEBOT3_MODEL=burger
 
 # Gazebo integration
-export GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH}:${DEV_WS}/install/turtlebot3_gazebo/share/turtlebot3_gazebo/models"
+export GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH}:${TB3_WS}/install/turtlebot3_gazebo/share/turtlebot3_gazebo/models"
 export GAZEBO_RESOURCE_PATH="${GAZEBO_RESOURCE_PATH}:${HOME}/.gazebo"
 export GAZEBO_PLUGIN_PATH="${GAZEBO_PLUGIN_PATH}:/opt/ros/humble/lib"
 

@@ -17,33 +17,15 @@ if [[ ! -f "${TB3_ENV}" ]]; then
     return 1
 fi
 
-# Source tb3_env.sh to get environment setup
+# Source tb3_env.sh to get environment setup and TB3_WS variable
 source "${TB3_ENV}"
 
-# Find TurtleBot3 workspace - check common locations
-TB3_WS=""
-if [[ -d "$HOME/turtlebot3" ]]; then
-    TB3_WS="$HOME/turtlebot3"
-elif [[ -d "$HOME/comp2011/turtlebot3" ]]; then
-    TB3_WS="$HOME/comp2011/turtlebot3"
-elif [[ -d "/root/turtlebot3" ]]; then
-    TB3_WS="/root/turtlebot3"
-fi
-
-# Check if TurtleBot3 workspace was found
-if [[ -z "$TB3_WS" ]] || [[ ! -d "$TB3_WS" ]]; then
-    echo "[TB3_AUTO] WARNING: TurtleBot3 workspace not found"
+# TB3_WS is now provided by tb3_env.sh
+# Check if TurtleBot3 workspace exists
+if [[ ! -d "$TB3_WS" ]]; then
+    echo "[TB3_AUTO] WARNING: TurtleBot3 workspace not found at $TB3_WS"
+    echo "[TB3_AUTO] Please run setup_u22_tb3.sh to install TurtleBot3"
     return 1
-fi
-
-# Export TB3_WS for use in commands
-export TB3_WS
-
-# Source TurtleBot3 workspace if built
-if [[ -f "$TB3_WS/install/setup.bash" ]]; then
-    source "$TB3_WS/install/setup.bash"
-else
-    echo "[TB3_AUTO] WARNING: TurtleBot3 workspace not built yet at $TB3_WS"
 fi
 
 # -------------------------------

@@ -29,30 +29,9 @@ echo "[INFO] ROS 2 Humble found at /opt/ros/humble"
 source /opt/ros/humble/setup.bash
 echo ""
 
-# Install TurtleBot3 packages
-echo "Installing TurtleBot3 packages..."
-echo "  - Updating apt cache..."
-$SUDO apt update
-echo "  - Installing ros-humble-dynamixel-sdk..."
-$SUDO apt install -y ros-humble-dynamixel-sdk
-echo "  - Installing ros-humble-turtlebot3-msgs..."
-$SUDO apt install -y ros-humble-turtlebot3-msgs
-echo "  - Installing ros-humble-turtlebot3..."
-$SUDO apt install -y ros-humble-turtlebot3
-
-echo "[OK] TurtleBot3 packages installed"
-echo ""
-
-# Determine turtlebot3 workspace location
-# If comp2011 exists in home, install turtlebot3 next to it
-# Otherwise, install in home directory
-if [ -d "$HOME/comp2011" ]; then
-    TB3_WS_DIR="$HOME/turtlebot3"
-    echo "[INFO] comp2011 found in home, installing turtlebot3 at: $TB3_WS_DIR"
-else
-    TB3_WS_DIR="$HOME/turtlebot3"
-    echo "[INFO] Installing turtlebot3 at: $TB3_WS_DIR"
-fi
+# TurtleBot3 workspace location - always in home directory
+TB3_WS_DIR="$HOME/turtlebot3_ws"
+echo "[INFO] Installing turtlebot3 at: $TB3_WS_DIR"
 
 # Create turtlebot3 workspace directory
 echo "Creating workspace directory..."
@@ -60,6 +39,53 @@ mkdir -p "$TB3_WS_DIR/src"
 cd "$TB3_WS_DIR/src"
 
 echo "TurtleBot3 workspace created at: $TB3_WS_DIR"
+echo ""
+
+# Clone TurtleBot3 packages (prerequisites for simulation)
+echo "Cloning TurtleBot3 packages from GitHub..."
+echo "  - Cloning DynamixelSDK (humble branch)..."
+if [ -d "DynamixelSDK" ]; then
+    echo "[INFO] DynamixelSDK already exists, pulling latest changes..."
+    cd DynamixelSDK
+    git pull || echo "[WARNING] Failed to pull updates"
+    cd "$TB3_WS_DIR/src"
+else
+    git clone -b humble https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+fi
+
+echo "  - Cloning turtlebot3_msgs (humble branch)..."
+if [ -d "turtlebot3_msgs" ]; then
+    echo "[INFO] turtlebot3_msgs already exists, pulling latest changes..."
+    cd turtlebot3_msgs
+    git pull || echo "[WARNING] Failed to pull updates"
+    cd "$TB3_WS_DIR/src"
+else
+    git clone -b humble https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+fi
+
+echo "  - Cloning turtlebot3 (humble branch)..."
+if [ -d "turtlebot3" ]; then
+    echo "[INFO] turtlebot3 already exists, pulling latest changes..."
+    cd turtlebot3
+    git pull || echo "[WARNING] Failed to pull updates"
+    cd "$TB3_WS_DIR/src"
+else
+    git clone -b humble https://github.com/ROBOTIS-GIT/turtlebot3.git
+fi
+
+echo "[OK] TurtleBot3 packages ready"
+echo ""
+
+# Install TurtleBot3 ROS packages (Dynamixel SDK is built from source above)
+echo "Installing additional TurtleBot3 ROS packages..."
+echo "  - Updating apt cache..."
+$SUDO apt update
+echo "  - Installing ros-humble-dynamixel-sdk (for system dependencies)..."
+$SUDO apt install -y ros-humble-dynamixel-sdk
+echo "  - Installing ros-humble-turtlebot3..."
+$SUDO apt install -y ros-humble-turtlebot3
+
+echo "[OK] TurtleBot3 ROS packages installed"
 echo ""
 
 # Clone TurtleBot3 Simulations repository
@@ -70,8 +96,8 @@ if [ -d "turtlebot3_simulations" ]; then
     git pull || echo "[WARNING] Failed to pull updates"
     cd "$TB3_WS_DIR/src"
 else
-    echo "Cloning from GitHub (humble-devel branch)..."
-    git clone -b humble-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+    echo "  - Cloning turtlebot3_simulations (humble branch)..."
+    git clone -b humble https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
 fi
 
 echo "[OK] TurtleBot3 Simulations repository ready"
@@ -127,7 +153,7 @@ echo "✓ TurtleBot3 Setup Complete!"
 echo "================================"
 echo ""
 echo "Installed components:"
-echo "  - TurtleBot3 ROS packages"
+echo "  - TurtleBot3 ROS packages (DynamixelSDK, turtlebot3_msgs, turtlebot3)"
 echo "  - TurtleBot3 Simulations (Gazebo)"
 echo "  - Workspace at: $TB3_WS_DIR"
 echo ""
@@ -144,7 +170,7 @@ echo "  - turtlebot3_house.launch.py"
 echo ""
 echo "To test manually in a new terminal:"
 echo "  export TURTLEBOT3_MODEL=burger"
-echo "  source ~/turtlebot3/install/setup.bash"
+echo "  source $TB3_WS_DIR/install/setup.bash"
 echo "  ros2 launch turtlebot3_gazebo empty_world.launch.py"
 echo "================================"
 

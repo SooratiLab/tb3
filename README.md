@@ -8,14 +8,15 @@ This repository contains automated setup scripts and tools for AICE2011 TurtleBo
 
 A prebuilt Ubuntu 22.04 VM with ROS2 Humble, Gazebo, and TurtleBot3 already installed is available:
 
-**Download:** [aice2011_ovf](https://sotonac-my.sharepoint.com/:f:/g/personal/aoa1v22_soton_ac_uk/IgDiy2JYCunCQr5a98dQKlvBAWQLB-vzB4W8NceRu4ofYsg?e=vRCPVp)
+**Download:** [aice2011_ovf](https://sotonac-my.sharepoint.com/:f:/g/personal/aoa1v22_soton_ac_uk/IgBi6TNXRL7oSZ8iZ4xMT0ogAR8L1MAPgPKF4_JAYxOdcKA?e=BWSqFC)
 
 **Link Valid until:** March 31, 2026
 
 **How to use:**
-1. Import the Virtual Machine file into VMWare or VirtualBox
-2. Open a terminal and run `test_tb3` to launch TurtleBot3 simulation
-3. Run `tb3_teleop` in another terminal to control the Turtlebot
+1. Import the `aice2011.ovf` file into VMWare or VirtualBox
+2. Start up the VM and login if needed
+3. Open a terminal and run `test_tb3` to launch TurtleBot3 simulation
+4. Run `tb3_teleop` in another terminal to control the Turtlebot
 
 **VM Credentials:**
 - Username: `aice`

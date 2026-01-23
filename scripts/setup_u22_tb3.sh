@@ -116,18 +116,17 @@ else
     echo "You can create the Python environment manually later."
 fi
 
-# Add auto_comp.sh and tb3_env.sh to bashrc if they exist
+# Add auto_comp.sh to bashrc (tb3_env.sh will be sourced internally)
 echo ""
 echo "Setting up bash environment scripts..."
 BASHRC="$HOME/.bashrc"
 AUTO_COMP_SCRIPT="$PYTHON_ENV_DIR/scripts/auto_comp.sh"
-TB3_ENV_SCRIPT="$PYTHON_ENV_DIR/scripts/tb3_env.sh"
 
 if [ -f "$AUTO_COMP_SCRIPT" ]; then
     AUTO_COMP_SOURCE="source $AUTO_COMP_SCRIPT"
     if ! grep -q "$AUTO_COMP_SOURCE" "$BASHRC"; then
         echo "" >> "$BASHRC"
-        echo "# TurtleBot3 Auto-completion" >> "$BASHRC"
+        echo "# TurtleBot3 Auto-completion and Environment" >> "$BASHRC"
         echo "$AUTO_COMP_SOURCE" >> "$BASHRC"
         echo "[OK] auto_comp.sh added to ~/.bashrc"
     else
@@ -137,26 +136,10 @@ else
     echo "[INFO] auto_comp.sh not found, skipping"
 fi
 
-if [ -f "$TB3_ENV_SCRIPT" ]; then
-    TB3_ENV_SOURCE="source $TB3_ENV_SCRIPT"
-    if ! grep -q "$TB3_ENV_SOURCE" "$BASHRC"; then
-        echo "" >> "$BASHRC"
-        echo "# TurtleBot3 Environment" >> "$BASHRC"
-        echo "$TB3_ENV_SOURCE" >> "$BASHRC"
-        echo "[OK] tb3_env.sh added to ~/.bashrc"
-    else
-        echo "[INFO] tb3_env.sh already in ~/.bashrc"
-    fi
-else
-    echo "[INFO] tb3_env.sh not found, skipping"
-fi
-
 echo ""
 echo "============================================================"
 echo "ROS2 + Gazebo + TurtleBot3 Setup Complete!"
 echo "============================================================"
-echo ""
-echo "ROS2 Humble, Gazebo, and TurtleBot3 have been installed."
 echo ""
 echo "To test TurtleBot3 simulation (in a new terminal):"
 echo "  test_tb3"

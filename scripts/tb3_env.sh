@@ -63,7 +63,7 @@ else
 fi
 
 # TB3 Model
-export TURTLEBOT3_MODEL=burger
+export TURTLEBOT3_MODEL=waffle_pi
 
 # Gazebo integration
 export GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH}:${TB3_WS}/install/turtlebot3_gazebo/share/turtlebot3_gazebo/models"

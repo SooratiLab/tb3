@@ -358,7 +358,9 @@ The instructions to set up the camera manually differs slightly from the ROBOTIS
   indentation: 2,
   ```bash
 sudo apt update
-sudo apt install -y python3-pip git python3-jinja2 libboost-dev libgnutls28-dev openssl libtiff-dev pybind11-dev qtbase5-dev libqt5core5a libqt5widgets5 cmake python3-yaml python3-ply libglib2.0-dev libgstreamer-plugin1.0-dev
+sudo apt install -y python3-pip git python3-jinja2 libboost-dev libgnutls28-dev openssl \ 
+        libtiff-dev pybind11-dev qtbase5-dev libqt5core5a libqt5widgets5 cmake python3-yaml \ 
+        python3-ply libglib2.0-dev libgstreamer-plugin1.0-dev
 sudo apt install ros-humble-camera-ros
 pip install meson ninja
 ```)

@@ -28,6 +28,13 @@ if [[ ! -d "$TB3_WS" ]]; then
     return 1
 fi
 
+# Get the python executable path from the ROS2 environment
+PYTHON_EXEC=$(which python3)
+if [[ -z "$PYTHON_EXEC" ]]; then
+    echo "[TB3_AUTO] ERROR: Python3 executable not found in PATH"
+    return 1
+fi
+
 # -------------------------------
 # TurtleBot3 Gazebo Aliases
 # -------------------------------
@@ -42,6 +49,11 @@ alias tb3_house='ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py'
 
 # TurtleBot3 teleoperation
 alias tb3_teleop='ros2 run turtlebot3_teleop teleop_keyboard'
+
+# TurtleBot3 poweroff remote robots
+# Check script for detailed usage instructions
+alias tb3_poweroff="${PYTHON_EXEC} ${SCRIPT_DIR}/tb3_poweroff.py"
+alias pwf="${PYTHON_EXEC} ${SCRIPT_DIR}/tb3_poweroff.py"
 
 # -------------------------------
 # Gazebo Management Commands

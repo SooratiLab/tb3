@@ -1,4 +1,4 @@
-#let version = "v2.1"
+#let version = "v2.2"
 
 #set text(font: "DejaVu Sans", size: 10pt, lang: "en", region: "gb")
 #set page(margin: 2cm)
@@ -25,7 +25,7 @@
 
 This tool utilises Packer and Podman to automate the creation of Raspberry Pi 4 images for TurtleBot3 robots. The tool can be found #link("https://github.com/tgodfrey0/turtlebot3_custom_image")[here]. _Disclaimer:_ this system was designed on Linux, YMMV on Windows or MacOS but most instructions are transferable.
 
-A pre-made image for the TB3 Burger (LDS-03, PiCamera (`libcamera` stack)) can be found #link("https://drive.google.com/drive/folders/1bvYBT5LfiV7HOOFlRQBDTyHcVLiAmQ3g?usp=sharing")[here]. Make sure to follow the @post instructions once you have flashed the MicroSD card (see @deploy). For this pre-built image, the username is `tb` and the password is `password`; you should change the password to something else. After booting, edit the file `/etc/netplan/50-cloud-init.yaml` and input your `SOTON-IoT` password
+A pre-made image for the TB3 Burger (LDS-03, PiCamera (`libcamera` stack)) can be found #link("https://drive.google.com/drive/folders/1bvYBT5LfiV7HOOFlRQBDTyHcVLiAmQ3g?usp=sharing")[here]. Make sure to follow the @post instructions once you have flashed the MicroSD card (see @deploy). For this pre-built image, the username is `tb` and the password is `password`; you should change the password to something else. The image is built with the University of Southampton's IoT network as a placeholder; after booting, edit the file `/etc/netplan/50-cloud-init.yaml` and input your network details.
 
 == Prerequisites
 - *Python 3.11+*
@@ -134,7 +134,7 @@ You will need a VM to run on the remote PC; you can download VMWare Workstation 
 
 == Setup Tailscale on VM and TurtleBot3
 
-1. Create a Tailscale account using your Gmail account or GitHub (using your `soton.ac.uk` account will not work).
+1. Create a Tailscale account using your Gmail account or GitHub
 2. Install Tailscale on the VM:
 
 #zebraw(
@@ -566,6 +566,7 @@ timedatectl status
   table.header(
     [*Version*], [*Date*], [*Edited By*],
   ),
+  [v2.2], [2026-02-19], [TG],
   [v2.1], [2026-02-19], [TG],
   [v2.0], [2026-02-18], [TG, AO],
   [v1.1], [2026-02-18], [TG],

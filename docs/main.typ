@@ -348,7 +348,7 @@ Messages should be received.
     offset: 3pt,
   ),
   title: "Setting Up the Camera Again",
-  "If you previously tries to set up the camera, make sure to uninstall all dependencies and remove the `libcamera` repository beforehand."
+  "If you previously tried to set up the camera, make sure to uninstall all dependencies and remove the `libcamera` repository beforehand."
 )
 
 The instructions to set up the camera manually differs slightly from the ROBOTIS instructions. First install the dependencies (make sure not to install Meson or Ninja from `apt`).

@@ -6,7 +6,7 @@
 
 This tool utilises Packer and Podman to automate the creation of Raspberry Pi 4 images for TurtleBot3 robots. The tool can be found [here](https://github.com/tgodfrey0/turtlebot3_custom_image). _Disclaimer:_ this system was designed on Linux, YMMV on Windows or MacOS but most instructions are transferable.
 
-A pre-made image for the TB3 Burger (LDS-03, PiCamera (`libcamera` stack)) can be found [here](https://drive.google.com/drive/folders/1bvYBT5LfiV7HOOFlRQBDTyHcVLiAmQ3g?usp=sharing). Make sure to follow the post install instructions once you have flashed the MicroSD card. For this pre-built image, the username is `tb` and the password is `password`; you should change the password to something else. The image is built with the University of Southampton's IoT network as a placeholder; after booting, edit the file `/etc/netplan/50-cloud-init.yaml` and input your network details.
+A pre-made image for the TB3 Burger (LDS-03, PiCamera (`libcamera` stack)) can be found [here](https://drive.google.com/drive/folders/1bvYBT5LfiV7HOOFlRQBDTyHcVLiAmQ3g?usp=sharing). Make sure to follow the post install instructions once you have flashed the MicroSD card. For this pre-built image, the username is `tb` and the password is `password`; you should change the password to something else. The image is built with the University of Southampton's IoT network as a placeholder; after booting, edit the file `/etc/netplan/50-cloud-init.yaml` and input your network details. You can change the `ROS_DOMAIN_ID` in `/etc/profile.d/90-turtlebot-ros-profile.sh`, then reboot.
 
 ## Prerequisites
 - *Python 3.11+*

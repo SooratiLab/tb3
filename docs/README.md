@@ -6,7 +6,7 @@
 
 This tool utilises Packer and Podman to automate the creation of Raspberry Pi 4 images for TurtleBot3 robots. The tool can be found [here](https://github.com/tgodfrey0/turtlebot3_custom_image). _Disclaimer:_ this system was designed on Linux, YMMV on Windows or MacOS but most instructions are transferable.
 
-A pre-made image for the TB3 Burger (LDS-03, PiCamera (`libcamera` stack)) can be found [here](https://drive.google.com/drive/folders/1bvYBT5LfiV7HOOFlRQBDTyHcVLiAmQ3g?usp=sharing). Make sure to follow the @post instructions once you have flashed the MicroSD card (see @deploy). For this pre-built image, the username is `tb` and the password is `password`; you should change the password to something else. The image is built with the University of Southampton's IoT network as a placeholder; after booting, edit the file `/etc/netplan/50-cloud-init.yaml` and input your network details.
+A pre-made image for the TB3 Burger (LDS-03, PiCamera (`libcamera` stack)) can be found [here](https://drive.google.com/drive/folders/1bvYBT5LfiV7HOOFlRQBDTyHcVLiAmQ3g?usp=sharing). Make sure to follow the post install instructions once you have flashed the MicroSD card. For this pre-built image, the username is `tb` and the password is `password`; you should change the password to something else. The image is built with the University of Southampton's IoT network as a placeholder; after booting, edit the file `/etc/netplan/50-cloud-init.yaml` and input your network details.
 
 ## Prerequisites
 - *Python 3.11+*
@@ -32,8 +32,7 @@ password = "secure_password"
 
 See the `configs/example.toml` to view a complete example.
 
-> **Changing the image size and ISO**
->
+> [!CAUTION]
 > It is not recommended to change the ISO that the config points to and the target image size (unless adding new packages/files).
 
 ### Build Process
@@ -229,8 +228,7 @@ Messages should be received.
 
 ## Manual Camera Setup
 
-> **Setting Up the Camera Again**
->
+> [!IMPORTANT]  
 > If you previously tried to set up the camera, make sure to uninstall all dependencies and remove the `libcamera` repository beforehand.
 
 The instructions to set up the camera manually differs slightly from the ROBOTIS instructions. First install the dependencies (make sure not to install Meson or Ninja from `apt`).

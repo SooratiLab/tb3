@@ -22,24 +22,24 @@ Usage:
     CLI alias: tb3_poweroff, pwf
 """
 
-import os
 import sys
 import subprocess
 import argparse
 import time
 import csv
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 
 # Add scripts directory to path for importing Terminal
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = Path(__file__).parent.resolve()
 if SCRIPT_DIR not in sys.path:
     sys.path.append(SCRIPT_DIR)
 
 from terminal import Terminal
 
 # Cache file for storing SSH user information
-CACHE_FILE = os.path.join(SCRIPT_DIR, ".quick.csv")
+CACHE_FILE = SCRIPT_DIR / ".quick.csv"
 
 # Common SSH usernames to try for auto-detection
 # You can add your own common usernames here if needed
@@ -157,7 +157,7 @@ def read_cache() -> dict:
         Dict mapping hostname to dict with keys: ip, username, passwordless, last_updated
     """
     cache = {}
-    if not os.path.exists(CACHE_FILE):
+    if not CACHE_FILE.exists():
         return cache
     
     try:

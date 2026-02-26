@@ -299,11 +299,9 @@ Install plugins:
 sudo apt install ros-humble-image-transport-plugins
 ```
 
-Python launch file node:
+If you already have a launch file, you can add this node to it:
 
 ```python
-from launch_ros.actions import Node
-
 image_compressed_republisher = Node(
     package='image_transport',
     executable='republish',

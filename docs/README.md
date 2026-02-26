@@ -343,6 +343,19 @@ Always source after changes:
 source install/setup.bash
 ```
 
+## SSH Into Shared Tailscale Devices
+
+By default, if you share you robot from your Tailnet to other people, they cannot SSH into it, even if SSH is enabled. To fix this, you must add an ACL rule to allow it. 
+
+The following needs to be done on the account of the user who 'owns the robot', i.e. it's not shared with them.
+
+First go to Access Controls->Tags and click "create Tag". Name it something like "shared-robot" and set the owner field to your account.
+
+
+Then go to Access Controls->Tailscale SSH and click "Add Rule". In the source field, add the Tailscale usernames of everyone you want to be able to SSH into your robot. Then in the Destination field, select the tag you created in the step before. For destination user, you can put the username you use when you SSH into your robot, or you can put "autogroup:nonroot, root" to allow access to any user. Leave check mode to "Off" and add save the rule. 
+
+SSH into the shared machine should now work. If not, check you entered the usernames correctly.
+
 ## Troubleshooting Common Issues
 
 1. Old ROS processes:

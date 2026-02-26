@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+build
+*.so
+api
+logs
+.nfs*
+*.so
+*.egg-info
+temp/
+*.csv
+*.png
+
+# Ignore .quick.csv files
+*.quick.csv

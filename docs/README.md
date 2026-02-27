@@ -356,6 +356,8 @@ SSH into the shared machine should now work. If not, check you entered the usern
 
 ## Troubleshooting Common Issues
 
+The following items can cause issues during use.
+
 1. Old ROS processes:
 
 ```bash
@@ -402,10 +404,15 @@ Then verify again:
 timedatectl status
 ```
 
+8. `Request cancelled` when using the camera
+
+Make sure you have the `TURTLEBOT3_MODEL` variable set.
+
 # Version History
 
 | Version | Date       | Edited By |
 |---------|------------|-----------|
+| v2.4    | 2026-02-27 | TG        |
 | v2.3    | 2026-02-19 | TG        |
 | v2.2    | 2026-02-19 | TG        |
 | v2.1    | 2026-02-19 | TG        |

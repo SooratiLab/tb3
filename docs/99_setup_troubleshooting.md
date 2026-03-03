@@ -2,7 +2,7 @@
 
 This guide covers common issues you may encounter when setting up and using the TurtleBot 3, along with their solutions.
 
-## 0. Check Environment Variables Are Exported
+## 1. Check Environment Variables Are Exported
 
 Before troubleshooting more complex issues, verify that all required environment variables are set in your current shell:
 

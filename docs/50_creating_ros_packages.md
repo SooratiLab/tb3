@@ -34,6 +34,58 @@ source install/setup.bash
 > [!IMPORTANT]
 > Do not add your own packages to the TurtleBot3 workspace (`turtlebot3_ws`). Keep your packages in a separate workspace to avoid conflicts when updating the TurtleBot3 packages.
 
+## Where to Run Nodes
+
+A typical setup for TurtleBot3 development is to run your custom application code on your laptop (the remote PC), while only running the robot bringup on the robot itself. This keeps the robot lightweight and allows you to develop and test code without frequently accessing the robot.
+
+The `turtlebot3_bringup` package on the robot handles:
+- Launching the robot's hardware drivers
+- Publishing sensor data (camera, LiDAR, IMU)
+- Subscribing to `cmd_vel` for motor control
+
+Your custom nodes on the laptop can then:
+- Subscribe to sensor topics from the robot
+- Process data and make decisions
+- Publish `cmd_vel` commands back to the robot
+
+Both the laptop and robot must be on the same ROS domain and connected via Zenoh for this to work.
+
+## Topics, Messages, and QoS
+
+### Topics
+
+Topics are named buses where nodes exchange messages. A node can **publish** messages to a topic or **subscribe** to receive messages from a topic. Many nodes can publish to and subscribe from the same topic.
+
+### Common TurtleBot3 Topics
+
+| Topic | Message Type | Description |
+|-------|--------------|-------------|
+| `/cmd_vel` | `geometry_msgs/Twist` | Velocity commands (linear/angular) |
+| `/scan` | `sensor_msgs/LaserScan` | LiDAR scan data |
+| `/odom` | `nav_msgs/Odometry` | Odometry (position/velocity) |
+
+### Quality of Service (QoS)
+
+QoS controls how messages are delivered. Key policies include:
+
+- **Reliability**: `RELIABLE` ensures messages are delivered (like TCP), while `BEST_EFFORT` drops messages if they're late (like UDP).
+- **History**: `KEEP_LAST(n)` keeps the last n messages, `KEEP_ALL` keeps all.
+
+For sensors (LiDAR, camera), use `BEST_EFFORT` since old data is less useful. For commands (`cmd_vel`), use `RELIABLE` to ensure commands arrive.
+
+```python
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+
+qos = QoSProfile(
+    reliability=ReliabilityPolicy.RELIABLE,
+    history=HistoryPolicy.KEEP_LAST,
+    depth=10
+)
+
+self.pub = self.create_publisher(Twist, 'cmd_vel', qos)
+self.sub = self.create_subscription(LaserScan, 'scan', self.scan_callback, qos)
+```
+
 ## Creating a Python Package with rclpy
 
 > [!NOTE]

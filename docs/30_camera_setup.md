@@ -59,6 +59,10 @@ ros2 run rqt_image_view rqt_image_view
 
 Select /camera/image_raw/compressed.
 
+> [!INFO]
+> If you receive an error when using the compressed camera topic, install the image transport plugins: `sudo apt install ros-humble-image-transport-plugins`
+
+
 ## Image Transport Optimisation
 
 Raw image topics are very high bandwidth (approximately 27 MB/s for 640×480 RGB8 at 30 FPS).

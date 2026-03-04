@@ -195,6 +195,8 @@ Both blocks use the shared `v3_block` mesh scaled to real units (`scale 0.001`) 
 ```bash
 export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch your_package_name sim.launch.py
+
+# You can comment out "'extra_gazebo_args': '--verbose'," to reduce the verbose rate
 ```
 
 **To open the world directly (standalone Gazebo, Option B model install):**

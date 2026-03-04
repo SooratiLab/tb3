@@ -61,7 +61,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             'world': world_file,
-            # Let turtlebot3_gazebo models be found by gzserver
+            # Comment this out if you don't want Gazebo to print all the extra info in the terminal
             'extra_gazebo_args': '--verbose',
         }.items(),
     )

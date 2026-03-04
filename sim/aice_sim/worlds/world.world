@@ -200,7 +200,7 @@
     </model>
 
     <model name="v3_block_blue">
-      <static>1</static>
+      <static>0</static>
       <pose>-0.5 0 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
@@ -231,7 +231,7 @@
     </model>
 
     <model name="v3_block_red">
-      <static>1</static>
+      <static>0</static>
       <pose>0.5 0 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">

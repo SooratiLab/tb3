@@ -212,7 +212,7 @@ gazebo --verbose sim/aice_sim/worlds/world.world
 
 ```xml
 <model name="v3_block_red_2">
-  <static>1</static>
+  <static>0</static>
   <pose>0.5 0.5 0 0 0 0</pose>
   <link name="link">
     <visual name="visual">

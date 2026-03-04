@@ -60,7 +60,10 @@ ros2 run rqt_image_view rqt_image_view
 Select /camera/image_raw/compressed.
 
 > [!INFO]
-> If you receive an error when using the compressed camera topic, install the image transport plugins: `sudo apt install ros-humble-image-transport-plugins`
+> If you receive an error when using the compressed camera topic, install the image transport plugins: 
+>
+>`sudo apt install ros-humble-image-transport-plugins`
+
 
 
 ## Image Transport Optimisation

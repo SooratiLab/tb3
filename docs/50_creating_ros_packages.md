@@ -210,6 +210,9 @@ ros2 run my_robot_package my_node
 
 `colcon` is the command-line tool for building and testing ROS 2 packages. It stands for "collective construction" and is the successor to `catkin_make` from ROS 1.
 
+> [!WARNING]
+> If you are building a package **on** the robot, use the `--parallel-workers 1` flag to prevent the entire system being blocked by `colcon`
+
 ### Common colcon Commands
 
 - **Build all packages** in your workspace:

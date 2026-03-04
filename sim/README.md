@@ -8,7 +8,7 @@ This repository contains automated setup scripts and tools for AICE2011 TurtleBo
 
 A prebuilt Ubuntu 22.04 VM with ROS2 Humble, Gazebo, and TurtleBot3 already installed is available:
 
-**Download:** 
+**Download:**
 - **Google Drive:** [aice2011_ovf](https://drive.google.com/drive/folders/1HmuMpw_ZSBALqlwnA3RN4CIKW0GDqEab?usp=sharing)
 - **OneDrive:** [aice2011_ovf](https://sotonac-my.sharepoint.com/:f:/g/personal/aoa1v22_soton_ac_uk/IgBi6TNXRL7oSZ8iZ4xMT0ogAR8L1MAPgPKF4_JAYxOdcKA?e=Sor9ci)
 
@@ -27,12 +27,16 @@ A prebuilt Ubuntu 22.04 VM with ROS2 Humble, Gazebo, and TurtleBot3 already inst
 2. Start up the VM and login if needed
 3. Open a terminal and run `test_tb3` to launch TurtleBot3 simulation
 4. Run `tb3_teleop` in another terminal to control the Turtlebot
+5. Run `pwf` to remotely shut down robots when done
 
 **VM Credentials:**
 - Username: `aice`
 - Password: `2011`
 
-### Option 2: One-Command Setup on Ubuntu 22.04
+### Option 2: Manual Setup on Ubuntu 22.04
+
+<details>
+<summary>Expand for manual setup instructions</summary>
 
 For a complete TurtleBot3 simulation environment on Ubuntu 22.04:
 
@@ -45,11 +49,33 @@ bash setup_u22_tb3.sh
 This will install:
 - ROS2 Humble
 - Gazebo simulator
-- TurtleBot3 packages and simulation workspace
-- Python virtual environment (aice2011)
-- Bash aliases and auto-completion
+- TurtleBot3 packages and simulation workspace (`~/turtlebot3_ws`)
+- Python virtual environment (`aice2011` in `~/envs/aice2011`)
+- TurtleBot3 environment and auto-completion scripts (sourced automatically from `~/.bashrc`)
+
+</details>
+
+### Option 3: ROS2 Humble with Gazebo Only (Minimal)
+
+<details>
+<summary>Expand for minimal setup instructions</summary>
+
+```bash
+wget https://git.soton.ac.uk/aoa1v22/aice2011/-/raw/main/scripts/setup_u22_gazebo.sh
+chmod +x setup_u22_gazebo.sh
+bash setup_u22_gazebo.sh
+```
+
+Installs ROS2 Humble, Gazebo, and the Python virtual environment — without the TurtleBot3 workspace.
+
+</details>
 
 ### Testing Your Installation
+
+> **Note:** Keep your local copy of this repository up to date before each session:
+> ```bash
+> cd ~/aice2011 && git pull
+> ```
 
 After setup, open a new terminal and run:
 ```bash
@@ -69,9 +95,9 @@ tb3_teleop
 
 Use the keyboard controls (W/A/S/D/X) to move the TurtleBot3 around.
 
-## What's Included
+---
 
-### Setup Scripts (`scripts/`)
+## Setup Scripts (`scripts/`)
 
 - **`setup_u22_tb3.sh`** - Complete TurtleBot3 setup (recommended)
 - **`setup_u22_gazebo.sh`** - Minimal ROS2 + Gazebo setup
@@ -79,40 +105,103 @@ Use the keyboard controls (W/A/S/D/X) to move the TurtleBot3 around.
 - **`setup/gazebo.sh`** - Gazebo configuration
 - **`setup/tb3.sh`** - TurtleBot3 workspace setup
 
-### Environment Scripts
+---
 
-- **`auto_comp.sh`** - TurtleBot3 aliases and command auto-completion
-- **`tb3_env.sh`** - Environment configuration and variables
+## Environment Scripts
 
-### Python Environment (`venv/`)
+### `tb3_env.sh` — TurtleBot3 Environment Loader
+
+Sourced automatically by `auto_comp.sh` (and therefore by `~/.bashrc`). Sets up all environment variables required to run TurtleBot3 simulations:
+
+- Sources `/opt/ros/humble/setup.bash` and `/usr/share/gazebo/setup.sh`
+- Sources the built TurtleBot3 workspace at `~/turtlebot3_ws/install/setup.bash`
+- Sets `TURTLEBOT3_MODEL=waffle_pi`
+- Sets `RMW_IMPLEMENTATION=rmw_fastrtps_cpp`
+- Sets `ROS_DOMAIN_ID=30` **if not already defined** — export this variable before sourcing to isolate multiple simultaneous instances
+- Sets `GAZEBO_MASTER_URI` based on `ROS_DOMAIN_ID` (default: `http://localhost:11345`)
+- Exports `GAZEBO_MODEL_PATH`, `GAZEBO_RESOURCE_PATH`, and `GAZEBO_PLUGIN_PATH`
+
+To override the domain ID for a specific session:
+```bash
+export ROS_DOMAIN_ID=31
+source ~/aice2011/scripts/auto_comp.sh
+```
+
+### `auto_comp.sh` — Aliases and Shell Completion
+
+Sourced from `~/.bashrc`. Loads `tb3_env.sh` and registers the following commands and tab-completion functions.
+
+#### Launch Simulations
+
+| Command | Description |
+|---|---|
+| `test_tb3` | Launch TurtleBot3 in an empty Gazebo world |
+| `tb3_empty` | Launch TurtleBot3 in an empty Gazebo world |
+| `tb3_world` | Launch TurtleBot3 world |
+| `tb3_house` | Launch TurtleBot3 house world |
+
+#### Robot Control
+
+| Command | Description |
+|---|---|
+| `tb3_teleop` | Control the robot with keyboard (W/A/S/D/X) |
+| `pwf` | Remotely shut down TurtleBot3 robots (see below) |
+| `tb3_poweroff` | Alias for `pwf` |
+
+#### Process Management
+
+| Command | Description |
+|---|---|
+| `tb3_kill` | Gracefully stop Gazebo processes (SIGTERM then SIGKILL) |
+| `tb3_kill_all` | Stop all Gazebo and ROS2 processes and restart the ROS2 daemon |
+
+#### Workspace Build Commands
+
+| Command | Description |
+|---|---|
+| `tb3_build` | Build the entire workspace sequentially |
+| `tb3_build_par` | Build the entire workspace in parallel |
+| `tb3_build_pkg <pkg>` | Build a specific package sequentially |
+| `tb3_build_pkg_par <pkg>` | Build a specific package in parallel |
+| `tb3_rebuild_pkg <pkg>` | Clean and rebuild a specific package sequentially |
+| `tb3_clean` | Remove all build, install, and log artifacts |
+| `tb3_rebuild` | Clean then rebuild the entire workspace sequentially |
+
+Tab-completion is available for `tb3_build_pkg`, `tb3_build_pkg_par`, and `tb3_rebuild_pkg` — package names are resolved from the workspace `build/` directory.
+
+### `tb3_poweroff.py` — Remote Robot Shutdown
+
+Shuts down one or more physical TurtleBot3 robots over SSH via Tailscale. Automatically detects valid SSH usernames and caches them in `.quick.csv` for faster subsequent runs. Passwordless (key-based) connections are prioritised over password-based ones.
+
+Common SSH usernames tried during auto-detection: `ubuntu`, `tb`, `pi`, `group`, `turtlebot` (plus the hostname itself). To add custom usernames, edit `COMMON_SSH_USERS` in `tb3_poweroff.py`.
+
+> **⚠ Important:** You must verify that `pwf` successfully shuts down your robot from the VM before running any test on the robot.
+
+#### Usage
+
+```bash
+pwf 1              # Shutdown tb1
+pwf 1 2 3          # Shutdown tb1, tb2, tb3
+pwf                # Auto-detect and shutdown all online TurtleBots
+pwf humble         # Shutdown device named 'humble'
+pwf -p mypassword  # Provide sudo password
+pwf -u ubuntu      # Force a specific SSH username
+pwf -d             # Dry-run: list targets without shutting down
+pwf -v             # Verbose: show SSH detection details
+pwf -q             # Quiet: suppress detailed output
+```
+
+> **Important:** Multiple robots are shut down in parallel. The script requires Tailscale to be running and the target devices to be online and reachable.
+
+---
+
+## Python Environment (`venv/`)
 
 - **`create_env.sh`** - Creates Python virtual environment at `~/envs/aice2011`
 - **`gen_requirements.py`** - Generates requirements files
 - **`requirements/`** - Python dependencies for different Python versions
 
-## Available Commands
-
-After installation, these commands are available:
-
-### Launch TurtleBot3 Simulations
-- `test_tb3` - Launch empty world
-- `tb3_empty` - Launch empty world
-- `tb3_world` - Launch TurtleBot3 world
-- `tb3_house` - Launch house world
-
-### Robot Control
-- `tb3_teleop` - Control robot with keyboard (use W/A/S/D/X keys)
-
-### Process Management
-- `tb3_kill` - Stop Gazebo processes
-- `tb3_kill_all` - Stop all ROS2 and Gazebo processes
-
-### Workspace Building
-- `tb3_build` - Build entire workspace
-- `tb3_build_pkg <package>` - Build specific package
-- `tb3_rebuild_pkg <package>` - Clean and rebuild package
-- `tb3_clean` - Remove build artifacts
-- `tb3_rebuild` - Clean and rebuild everything
+---
 
 ## Installation Locations
 
@@ -125,36 +214,39 @@ After installation, these commands are available:
 - Ubuntu 22.04
 - Internet connection
 - ~5GB disk space
-- Sudo privileges (unless running in Docker)
-
-## Documentation
-
-Detailed setup instructions and troubleshooting can be found in:
-- [`scripts/README.md`](scripts/README.md) - Setup script documentation
+- Sudo privileges
 
 ## Repository Structure
 
 ```
 aice2011/
-├── README.md              # This file
-├── scripts/               # Setup and management scripts
-│   ├── README.md         # Setup documentation
-│   ├── setup/            # Individual component setup scripts
-│   ├── setup_u22_tb3.sh  # Complete TurtleBot3 setup
-│   ├── setup_u22_gazebo.sh # Minimal Gazebo setup
-│   ├── auto_comp.sh      # Bash aliases and completion
-│   └── tb3_env.sh        # Environment configuration
-├── venv/                 # Python environment tools
-│   ├── create_env.sh     # Environment creation script
+├── README.md                  # This file
+├── scripts/                   # Setup and management scripts
+│   ├── setup/                 # Individual component setup scripts
+│   ├── setup_u22_tb3.sh       # Complete TurtleBot3 setup
+│   ├── setup_u22_gazebo.sh    # Minimal Gazebo setup
+│   ├── auto_comp.sh           # Bash aliases and completion
+│   ├── tb3_env.sh             # Environment configuration
+│   └── tb3_poweroff.py        # Remote robot shutdown
+├── venv/                      # Python environment tools
+│   ├── create_env.sh
 │   ├── gen_requirements.py
-│   └── requirements/     # Python dependencies
-└── setup.py              # Python package setup
+│   └── requirements/
+└── setup.py
 ```
+
+## Troubleshooting
+
+If a script fails:
+
+1. **Check internet connection** - Scripts need to download packages and clone repositories
+2. **Ensure sufficient disk space** - ROS2 and simulators require several GB
+3. **Review error messages** - Scripts will indicate which component failed
+4. **Re-run the script** - Many transient errors can be resolved by running again
 
 ## Support
 
 For issues or questions:
-1. Check [`scripts/README.md`](scripts/README.md) for detailed documentation
-2. Ensure all installation steps completed successfully
-3. Verify ROS2 and Gazebo are properly installed: `ros2 --version` and `gazebo --version`
-4. Report issues at: https://git.soton.ac.uk/aoa1v22/aice2011/-/issues
+1. Ensure all installation steps completed successfully
+2. Verify ROS2 and Gazebo are properly installed: `ros2 --version` and `gazebo --version`
+3. Report issues at: https://git.soton.ac.uk/aoa1v22/aice2011/-/issues

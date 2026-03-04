@@ -129,6 +129,12 @@ tb3_kill_all() {
 
 tb3_build() {
     cd "$TB3_WS"
+    colcon build --symlink-install --executor sequential
+    source "$TB3_WS/install/setup.bash"
+}
+
+tb3_build_par() {
+    cd "$TB3_WS"
     colcon build --symlink-install
     source "$TB3_WS/install/setup.bash"
 }
@@ -136,6 +142,17 @@ tb3_build() {
 tb3_build_pkg() {
     if [[ $# -eq 0 ]]; then
         echo "[tb3_build_pkg] ERROR: No package specified"
+        return 1
+    fi
+
+    cd "$TB3_WS"
+    colcon build --symlink-install --executor sequential --packages-select "$@"
+    source "$TB3_WS/install/setup.bash"
+}
+
+tb3_build_pkg_par() {
+    if [[ $# -eq 0 ]]; then
+        echo "[tb3_build_pkg_par] ERROR: No package specified"
         return 1
     fi
 
@@ -157,7 +174,7 @@ tb3_rebuild_pkg() {
         rm -rf "build/$pkg" "install/$pkg"
     done
 
-    colcon build --symlink-install --packages-select "$@"
+    colcon build --symlink-install --executor sequential --packages-select "$@"
     source "$TB3_WS/install/setup.bash"
 }
 
@@ -194,7 +211,7 @@ _tb3_complete_packages() {
     return 0
 }
 
-complete -F _tb3_complete_packages tb3_build_pkg tb3_rebuild_pkg
+complete -F _tb3_complete_packages tb3_build_pkg tb3_build_pkg_par tb3_rebuild_pkg
 
 echo "[TB3_AUTO] TurtleBot3 environment loaded (MODEL=${TURTLEBOT3_MODEL})"
 return 0

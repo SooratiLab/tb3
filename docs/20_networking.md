@@ -6,6 +6,8 @@ You should have a working Turtlebot3 Waffle with the correct image. If you do no
 
 You will need a VM to run on the remote PC; you can download VMWare Workstation Pro for Windows [here](https://drive.google.com/file/d/1fImMbF3tlhrv6NMppyDaYYmm7c6O-o8C/view?usp=drive_link).
 
+Information on setting up the VM can be found [here](../sim/README.md)
+
 ## Setup Tailscale on VM and TurtleBot3
 
 1. Create a Tailscale account using your Gmail account or GitHub

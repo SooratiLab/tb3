@@ -126,7 +126,8 @@ The model files and world are available [here](../sim/aice_sim/).
 
 ### Making the `v3_block` Model Findable by Gazebo
 
-> [!IMPORTANT] **Gazebo must be able to find the `v3_block` model before opening any world file.** If it is missing, Gazebo Classic will show a **black screen** because the world references `model://v3_block/...`.
+> [!IMPORTANT]
+> **Gazebo must be able to find the `v3_block` model before opening any world file.** If it is missing, Gazebo Classic will show a **black screen** because the world references `model://v3_block/...`.
 
 You can use either of the following methods to addess this.
 

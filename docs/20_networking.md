@@ -94,6 +94,9 @@ ros2 daemon stop
 2. Start the Zenoh router:
 
 ```bash
+# Export the RMW if not already done
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+
 ros2 run rmw_zenoh_cpp rmw_zenohd
 ```
 
@@ -108,6 +111,9 @@ tailscale ip
 1. Set the Zenoh client configuration, replacing <router_tailscale_ip> with the router's Tailscale IP:
 
 ```bash
+# Export the RMW if not already done
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+
 export ZENOH_CONFIG_OVERRIDE='mode="client";connect/endpoints=["tcp/<router_tailscale_ip>:7447"]'
 ```
 

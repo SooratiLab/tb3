@@ -165,7 +165,7 @@ By default, if you share you robot from your Tailnet to other people, they canno
 
 The following needs to be done on the account of the user who 'owns the robot', i.e. it's not shared with them.
 
-First go to Access Controls->Tags and click "create Tag". Name it something like "shared-robot" and set the owner field to your account.
+First go to Access Controls->Tags and click "create Tag". Name it something like "shared-robot" and set the owner field to your account. Then in the Machines tab, select the robot and click "Assign ACL Tags", then add the tag you just created.
 
 
 Then go to Access Controls->Tailscale SSH and click "Add Rule". In the source field, add the Tailscale usernames of everyone you want to be able to SSH into your robot. Then in the Destination field, select the tag you created in the step before. For destination user, you can put the username you use when you SSH into your robot, or you can put "autogroup:nonroot, root" to allow access to any user. Leave check mode to "Off" and add save the rule. 

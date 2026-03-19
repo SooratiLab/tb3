@@ -170,4 +170,6 @@ First go to Access Controls->Tags and click "create Tag". Name it something like
 
 Then go to Access Controls->Tailscale SSH and click "Add Rule". In the source field, add the Tailscale usernames of everyone you want to be able to SSH into your robot. Then in the Destination field, select the tag you created in the step before. For destination user, you can put the username you use when you SSH into your robot, or you can put "autogroup:nonroot, root" to allow access to any user. Leave check mode to "Off" and add save the rule. 
 
+You should also add a rule to allow the tagged robot to reach your other devices. GO to Access Controls->General Access Rules. Add a rule with the source as your tag, and the destination as `autogroup:members`. Allow all ports and protocols and click save.
+
 SSH into the shared machine should now work. If not, check you entered the usernames correctly.

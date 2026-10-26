@@ -1,220 +1,136 @@
-# Simulating TurtleBot3 with Gazebo
-
+# Simulating TurtleBot3 with Gazebo Sim
 
 ## 1. Background
 
-### What is Gazebo?
+The AICE2011 lab uses **ROS 2 Jazzy** and **Gazebo Sim Harmonic**. The whole environment runs in the [AICE2011 container](https://github.com/tgodfrey0/AICE2011_Container), so there is no virtual machine to install or configure.
 
-Gazebo is an open-source robot simulator that lets you test and develop robot code without physical hardware — useful for prototyping, debugging, and CI/CD pipelines.
+Gazebo Sim is the current generation of Gazebo. It is not Gazebo Classic:
 
-There are two generations in active use:
+| Gazebo Classic | Gazebo Sim Harmonic |
+|---|---|
+| `gazebo` | `gz sim` |
+| `gzserver` / `gzclient` | `gz sim` server and GUI |
+| `GAZEBO_MODEL_PATH` | `GZ_SIM_RESOURCE_PATH` |
+| `gazebo_ros` plugins | `ros_gz_sim`, `ros_gz_bridge`, `ros_gz_image` |
+| `geometry_msgs/msg/Twist` for `/cmd_vel` | `geometry_msgs/msg/TwistStamped` |
 
-| Version | Engine | ROS 2 Topic Integration |
-|---|---|---|
-| **Gazebo Classic** (Ignition Citadel/Fortress) | Ignition | Topics like `/cmd_vel`, `/scan`, `/odom` appear automatically as ROS 2 topics. No remapping needed. |
-| **Gazebo Sim** (new) | Gz | Uses internal topic names (e.g. `/world/{name}/model/...`). Must be bridged to ROS 2 via `ros_gz_bridge`. |
+Gazebo Sim uses its own transport topics. The `ros_gz_bridge` translates those topics into ROS 2 topics such as `/scan`, `/odom`, `/imu`, and `/camera/image_raw`.
 
-Here, we use **Gazebo Classic**.
+## 2. Start the container
 
-<details>
-<summary>Gazebo Sim bridging example (for reference only)</summary>
+Follow the [container README](https://github.com/tgodfrey0/AICE2011_Container) to start the lab and open the noVNC desktop. Everything below is typed **inside the container**, in a terminal on that desktop.
 
-```python
-Node(
-    package='ros_gz_bridge',
-    executable='parameter_bridge',
-    arguments=['/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist'],
-    remappings=[('/cmd_vel', '/robot_cmd_vel')]
-)
-```
+You do not need to install ROS 2, Gazebo, or TurtleBot3 packages yourself.
 
-</details>
+### Built-in worlds
 
----
-
-
-## 2. VM Setup (Ubuntu 22.04 VM)
-
-If you are running Gazebo inside a VM, expand the relevant section below before launching any simulation.
-
-<details>
-<summary>VMware</summary>
-
-#### Install VMware Tools
+The container has a launcher and two ready-made worlds:
 
 ```bash
-sudo apt update
-sudo apt install open-vm-tools open-vm-tools-desktop
-sudo reboot
+ros2 launch /home/student/lab/launch/tb3_launch.py world:=base_world
+ros2 launch /home/student/lab/launch/tb3_launch.py world:=house_world
 ```
 
-> You may also need to select **"Upgrade this Virtual Machine"** from the VMware menu if prompted.
-
-#### Fix Slow Performance
-
-If Gazebo is very slow or fails to render:
-
-- Increase VM **VRAM to 128 MB** in VMware settings
-- Toggle **3D acceleration** on or off (try both)
-
-</details>
-
-<details>
-<summary>VirtualBox</summary>
-
-#### Install Guest Additions
-
-Guest Additions enables display acceleration and proper rendering inside the VM.
-
-1. With the VM running, go to **Devices → Insert Guest Additions CD image…** in the VirtualBox menu.
-2. Run the installer inside the VM:
+Or use the aliases:
 
 ```bash
-sudo apt update
-sudo apt install build-essential dkms linux-headers-$(uname -r)
-sudo /media/$USER/VBox_GAs_*/VBoxLinuxAdditions.run
-sudo reboot
+tb3_base
+tb3_house
 ```
 
-#### Fix Slow Performance
+- **Base World** — ground plane and sun, no robot. Spawn a Waffle Pi yourself.
+- **TB3 House World** — the TurtleBot3 house with a Waffle Pi already loaded.
 
-If Gazebo is very slow or fails to render:
+To stop a world, press `Ctrl+C` in the terminal that started it, or run `tb3_kill`.
 
-- Go to **Settings → Display** for the VM and increase **Video Memory to 128 MB**
-- Enable **3D Acceleration** under the same Display tab
-- Make sure Guest Additions are installed (see above) — without them, 3D acceleration has no effect
+## 3. Use the `aice_sim` package
 
-> **Note:** VirtualBox 3D acceleration on Linux hosts requires the `vboxvideo` kernel module from Guest Additions. If Gazebo still crashes or shows a black screen, try disabling 3D acceleration and falling back to software rendering with:
-> ```bash
-> export LIBGL_ALWAYS_SOFTWARE=1
-> gazebo
-> ```
+The reference package is [`sim/aice_sim`](../sim/aice_sim/). It contains the launch file, worlds, and the `v3_block` model.
 
-</details>
-
----
-
-
-## 3. Setting Up Your ROS 2 Simulation Package
-
-Your simulation package should live inside a ROS 2 colcon workspace. If you haven't created one yet, see [`50_creating_ros_packages.md`](50_creating_ros_packages.md) first.
-
-Place your package under the workspace `src/` directory:
+### Package layout
 
 ```text
-my_ros2_ws/
-  src/
-    your_package/
-      CMakeLists.txt
-      package.xml
-      launch/
-        sim.launch.py
-      models/
-        v3_block/           ← copy from sim/aice_sim/models/v3_block/
-          meshes/
-            v3_block.stl
-          model.config
-          model.sdf
-      worlds/
-        world.world         ← copy from sim/aice_sim/worlds/world.world
+sim/aice_sim/
+├── CMakeLists.txt
+├── package.xml
+├── launch/
+│   └── sim.launch.py
+├── models/
+│   └── v3_block/
+│       ├── meshes/v3_block.stl
+│       ├── model.config
+│       └── model.sdf
+└── worlds/
+    ├── arena.world
+    ├── base_world.world
+    └── house_world.world
 ```
 
-The model files and world are available [here](../sim/aice_sim/).
+### Build it
 
-**You will need to download them to your VM or Computer before use**
-
-
-### Making the `v3_block` Model Findable by Gazebo
-
-> [!IMPORTANT]
-> **Gazebo must be able to find the `v3_block` model before opening any world file.** If it is missing, Gazebo Classic will show a **black screen** because the world references `model://v3_block/...`.
-
-You can use either of the following methods to addess this.
-
-#### Option A: Via your ROS 2 package (recommended)
-
-Add this export to your `package.xml` — it tells Gazebo to search your package's installed `models/` directory automatically at launch time:
-
-```xml
-<export>
-  <build_type>ament_cmake</build_type>
-  <gazebo_ros gazebo_model_path="${prefix}/models"/>
-</export>
-```
-
-And install the `models/`, `worlds/`, and `launch/` directories in your `CMakeLists.txt`:
-
-```cmake
-install(DIRECTORY launch worlds models
-  DESTINATION share/${PROJECT_NAME}
-)
-```
-
-### Building Your Package
-
-Run `colcon build` from the **workspace root** (the `my_ros2_ws/` directory containing `src/`). colcon will create `install/`, `build/`, and `log/` there.
+Copy the package into your container workspace and build it:
 
 ```bash
-cd ~/my_ros2_ws
-
-# Standard build
-colcon build --packages-select your_package_name
-
-# Low-RAM / VM: build one package at a time
-colcon build --packages-select your_package_name --executor sequential
-
-# Source the result
+cp -r /path/to/tb3_guides/sim/aice_sim ~/ros2_ws/src/
+cd ~/ros2_ws
+colcon build --symlink-install --packages-select aice_sim
 source install/setup.bash
 ```
 
-<details>
-<summary>Option B: Manual install (no ROS package / quick test)</summary>
+If you have already copied the repository into `~/ros2_ws/src`, build it from there instead. The container mounts `~/ros2_ws` from your computer, so the package survives a container restart.
 
-Copy the downloaded `v3_block` files to your `~/.gazebo/models` folder using the following command:
-
-```bash
-mkdir -p ~/.gazebo/models
-cp -r path/to/downloaded/v3_block ~/.gazebo/models/
-```
-
-</details>
-
-### Creating Coloured Variants (Red / Blue)
-
-#### Option 1 (recommended): Use the provided `world.world`
-
-The file `sim/aice_sim/worlds/world.world` already contains:
-
-- A **2 m × 2 m** enclosed wooden-wall arena
-- A **red block** (`v3_block_red`) at position `(0.5, 0, 0)`
-- A **blue block** (`v3_block_blue`) at position `(-0.5, 0, 0)`
-
-Both blocks use the shared `v3_block` mesh scaled to real units (`scale 0.001`) with a Gazebo material applied (`Gazebo/Red`, `Gazebo/Blue`).
-
-**To open it via your ROS 2 launch file (recommended):**
+### Run it
 
 ```bash
 export TURTLEBOT3_MODEL=waffle_pi
-ros2 launch your_package_name sim.launch.py
-
-# You can comment out "'extra_gazebo_args': '--verbose'," to reduce the verbose rate
+ros2 launch aice_sim sim.launch.py world:=arena
 ```
 
-**To open the world directly (standalone Gazebo, Option B model install):**
+Other worlds:
 
 ```bash
-gazebo --verbose sim/aice_sim/worlds/world.world
-
-# WARNING: This will fail or show blank if you did not copy the model files to ~/.gazebo/models
+ros2 launch aice_sim sim.launch.py world:=base_world
+ros2 launch aice_sim sim.launch.py world:=house_world
 ```
 
-**Adding more blocks:** open `world.world` in a text editor and duplicate an existing `<model>` block. Give each copy a unique `name` attribute and adjust its `<pose>` (format: `x y z roll pitch yaw`). For example, to add a second red block at `(0.5, 0.5, 0)`:
+Run without the Gazebo GUI:
+
+```bash
+ros2 launch aice_sim sim.launch.py world:=arena gui:=false
+```
+
+The launch file starts the Gazebo server and GUI, publishes the Waffle Pi's TF frames, and bridges the robot topics into ROS 2. The robot is included in the arena and house worlds, so no separate spawn step is needed.
+
+## 4. The arena
+
+`arena.world` is a 2 m × 2 m arena with 1 m high walls. It contains:
+
+- a TurtleBot3 Waffle Pi at the origin;
+- a red `v3_block` at `(0.5, 0, 0)`;
+- a blue `v3_block` at `(-0.5, 0, 0)`.
+
+The block mesh is stored in millimetres, so the world scales it by `0.001`.
+
+### Adding another block
+
+Copy an existing block model inside the world, give it a unique name, and change its pose:
 
 ```xml
-<model name="v3_block_red_2">
-  <static>0</static>
+<model name="v3_block_extra">
+  <static>false</static>
   <pose>0.5 0.5 0 0 0 0</pose>
   <link name="link">
+    <inertial>
+      <mass>0.045</mass>
+      <inertia>
+        <ixx>2.7e-5</ixx>
+        <ixy>0</ixy>
+        <ixz>0</ixz>
+        <iyy>2.7e-5</iyy>
+        <iyz>0</iyz>
+        <izz>2.7e-5</izz>
+      </inertia>
+    </inertial>
     <visual name="visual">
       <pose>0 0 0.03 0 0 0</pose>
       <geometry>
@@ -224,10 +140,9 @@ gazebo --verbose sim/aice_sim/worlds/world.world
         </mesh>
       </geometry>
       <material>
-        <script>
-          <uri>file://media/materials/scripts/gazebo.material</uri>
-          <name>Gazebo/Red</name>
-        </script>
+        <ambient>0.1 0.5 0.1 1</ambient>
+        <diffuse>0.2 0.7 0.2 1</diffuse>
+        <specular>0.1 0.1 0.1 1</specular>
       </material>
     </visual>
     <collision name="collision">
@@ -243,156 +158,134 @@ gazebo --verbose sim/aice_sim/worlds/world.world
 </model>
 ```
 
-Restart Gazebo after saving the file.
+Pose format is `x y z roll pitch yaw`.
 
-<details>
-<summary>Option 2: Create separate model folders manually</summary>
+## 5. Create your own world
 
-```bash
-cp -r ~/.gazebo/models/v3_block ~/.gazebo/models/v3_block_red
-cp -r ~/.gazebo/models/v3_block ~/.gazebo/models/v3_block_blue
-```
-
-Then for each copy:
-
-1. Update `<name>` in `model.config` to match the folder name (`v3_block_red` / `v3_block_blue`).
-2. Add a `<material>` tag under `<visual>` in `model.sdf`:
-   - Red: `Gazebo/Red`
-   - Blue: `Gazebo/Blue`
-
-Restart Gazebo after making edits.
-
-</details>
-
-<details>
-<summary>Option 3: Edit the world interactively in the Gazebo GUI</summary>
-
-You can place, move, rotate, and scale models directly in the Gazebo GUI without editing any XML.
-
-**Step 1 — Open the world:**
+Start from `arena.world` or `base_world.world` and save a copy in your own package:
 
 ```bash
-gazebo --verbose sim/aice_sim/worlds/world.world
+mkdir -p ~/ros2_ws/src/my_package/worlds
+cp sim/aice_sim/worlds/arena.world \
+  ~/ros2_ws/src/my_package/worlds/my_world.world
 ```
 
-**Step 2 — Insert a model:**
-
-1. Click the **Insert** tab in the left panel.
-2. Navigate to your model path (e.g. `~/.gazebo/models` or your package's `models/` directory).
-3. Click `v3_block` — a ghost preview will follow your cursor into the viewport.
-4. Click in the scene to place it.
-
-**Step 3 — Transform tools** (toolbar at the top, or keyboard shortcuts):
-
-| Tool | Shortcut | What it does |
-|---|---|---|
-| **Select** | `Esc` | Select a model to inspect it |
-| **Translate** | `T` | Drag the model along X/Y/Z axes using the arrow handles |
-| **Rotate** | `R` | Rotate the model around X/Y/Z axes using the ring handles |
-| **Scale** | `S` | Resize the model (uniform or per-axis) |
-
-Click a model first to select it (it highlights), then switch to the desired tool. Hold **Ctrl** while dragging to snap to the grid.
-
-**Step 4 — Save the world:**
-
-Go to **File → Save World As** and save over your `world.world` file (or to a new name). This writes the current state — including all model poses — back to SDF.
-
-> **Note:** The GUI scale tool changes the visual size of the instance only; it does not alter the underlying mesh or `model.sdf`. For a permanent size change, edit the `<scale>` value in the `<geometry>` tag inside `world.world` directly.
-
-</details>
-
-<details>
-<summary>Quick launch — built-in TurtleBot3 world (no custom arena)</summary>
+Run it by passing the absolute path:
 
 ```bash
-export TURTLEBOT3_MODEL=waffle_pi
-ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+ros2 launch aice_sim sim.launch.py \
+  world:=$HOME/ros2_ws/src/my_package/worlds/my_world.world
 ```
 
-</details>
+The launch file sets `GZ_SIM_RESOURCE_PATH` to include:
 
-<details>
-<summary>Launch with a custom world file (standalone Gazebo, no ROS package)</summary>
+- `aice_sim/models/`, so `model://v3_block` works;
+- the TurtleBot3 models, so `model://turtlebot3_waffle_pi` and the house work;
+- anything already in `GZ_SIM_RESOURCE_PATH`.
+
+If your world uses models from your own package, add that model directory before launching:
 
 ```bash
-gazebo --verbose /path/to/world.world
+export GZ_SIM_RESOURCE_PATH="$HOME/ros2_ws/src/my_package/models:$GZ_SIM_RESOURCE_PATH"
+ros2 launch aice_sim sim.launch.py \
+  world:=$HOME/ros2_ws/src/my_package/worlds/my_world.world
 ```
 
-If you hit loading errors, check the terminal output for lines like `model://v3_block ... not found`.
+### Spawning into the base world
 
-</details>
-
-### ROS 2 Launch file (Gazebo + TurtleBot3 spawn)
-
-Create `launch/sim.launch.py` in your package. A complete, working example is available at [`sim/aice_sim/launch/sim.launch.py`](../sim/aice_sim/launch/sim.launch.py) — copy it into your package and replace `'aice_sim'` with your package name.
-
-It starts Gazebo with your arena world, publishes the robot description, and spawns a TurtleBot3 Waffle Pi. Key arguments: `use_sim_time` (default `true`), `x_pose`, `y_pose`.
-
-Run:
+`base_world` deliberately contains no robot. Spawn a Waffle Pi with:
 
 ```bash
-export TURTLEBOT3_MODEL=waffle_pi
-ros2 launch your_package_name sim.launch.py
+ros2 run ros_gz_sim create \
+  -file /opt/ros/jazzy/share/turtlebot3_gazebo/models/turtlebot3_waffle_pi/model.sdf \
+  -x 0 -y 0 -z 0.1
 ```
 
-### Viewing the Camera Feed (Waffle Pi)
+Gazebo reports `Entity creation successful` when it works. If the robot does not appear, wait for the world to finish loading and run the command again.
 
-The TurtleBot3 Waffle Pi has a camera. Once the simulation is running, you can view its feed using `rqt_image_view`.
+## 6. Driving and inspecting the robot
 
-**On the VM (or any ROS 2 machine on the same domain):**
+Keyboard teleoperation:
+
+```bash
+ros2 run turtlebot3_teleop teleop_keyboard
+```
+
+| Key | Action |
+|---|---|
+| `w` / `x` | Speed up / slow down |
+| `a` / `d` | Turn left / right |
+| `s` or space | Stop |
+
+Publish a velocity directly. Jazzy uses `TwistStamped`:
+
+```bash
+ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/TwistStamped \
+  "{twist: {linear: {x: 0.2}, angular: {z: 0.5}}}"
+```
+
+Useful checks:
+
+```bash
+ros2 topic list
+ros2 topic hz /scan
+ros2 topic echo /odom --once
+ros2 node list
+```
+
+| Topic | Type |
+|---|---|
+| `/cmd_vel` | `geometry_msgs/msg/TwistStamped` |
+| `/odom` | `nav_msgs/msg/Odometry` |
+| `/imu` | `sensor_msgs/msg/Imu` |
+| `/scan` | `sensor_msgs/msg/LaserScan` |
+| `/camera/image_raw` | `sensor_msgs/msg/Image` |
+| `/camera/camera_info` | `sensor_msgs/msg/CameraInfo` |
+| `/clock` | `rosgraph_msgs/msg/Clock` |
+
+## 7. Camera feed
+
+The Waffle Pi has a simulated camera. View it inside the container:
 
 ```bash
 ros2 run rqt_image_view rqt_image_view
 ```
 
-In the dropdown, select `/camera/image_raw` (or `/camera/image_raw/compressed` if you have image transport plugins installed).
+Select `/camera/image_raw`.
 
-To check available camera topics:
-
-```bash
-ros2 topic list | grep camera
-```
-
-To check the stream rate and bandwidth:
+To use the compressed topic, install the image transport plugins:
 
 ```bash
-ros2 topic hz /camera/image_raw
-ros2 topic bw /camera/image_raw
+sudo apt install ros-jazzy-image-transport-plugins
 ```
 
-> **Note:** Raw image topics are high bandwidth (~27 MB/s for 640×480 RGB8 at 30 FPS). If you experience lag, use the compressed topic instead. Install the transport plugins if needed:
-> ```bash
-> sudo apt install ros-humble-image-transport-plugins
-> ```
-> Then select `/camera/image_raw/compressed` in `rqt_image_view`.
+Then select `/camera/image_raw/compressed` in `rqt_image_view`. Raw images are high bandwidth, so the compressed topic is useful when the container is slow.
 
-See `docs/30_camera_setup.md` for full camera setup and optimisation instructions for the physical robot.
+See [Camera Setup](30_camera_setup.md) for the physical camera.
 
----
+## 8. Simulation time
 
-### Simulation time
-
-For nodes that should follow Gazebo's clock rather than wall time, pass `use_sim_time=True`:
+Nodes that should follow Gazebo's clock rather than wall time need `use_sim_time`:
 
 ```python
 parameters=[{'use_sim_time': True}]
 ```
 
-Or set it at runtime:
+Or at runtime:
 
 ```bash
 ros2 param set /<node_name> use_sim_time true
 ```
 
----
+The `aice_sim` launch file already starts `robot_state_publisher` with simulation time enabled.
 
-## 5. Deploying Code to the TurtleBot
+## 9. Deploy code to the TurtleBot
 
-Once you have tested in simulation, transfer the ROS 2 workspace to the physical robot using one of the options below.
+Once your package works in simulation, transfer the workspace to the physical Waffle Pi.
 
-### Option A: Git over HTTPS with a Personal Access Token (PAT)
+### Option A: Git over HTTPS with a Personal Access Token
 
-On the TurtleBot:
+On the robot:
 
 ```bash
 git clone https://github.com/OWNER/REPO.git
@@ -406,10 +299,7 @@ To update later:
 cd REPO && git pull
 ```
 
-<details>
-<summary>Option B: GitHub CLI (<code>gh</code>)</summary>
-
-On the TurtleBot:
+### Option B: GitHub CLI
 
 ```bash
 sudo apt update && sudo apt install gh
@@ -417,77 +307,39 @@ gh auth login
 gh repo clone OWNER/REPO
 ```
 
-</details>
-
-<details>
-<summary>Option C: <code>scp</code> (one-off copy)</summary>
+### Option C: `scp`
 
 ```bash
-scp -r ~/my_ros2_ws turtlebot@TURTLEBOT_IP:~
+scp -r ~/ros2_ws turtlebot@<robot-ip>:~
 ```
 
-</details>
-
-<details>
-<summary>Option D: <code>rsync</code> (recommended for repeated transfers)</summary>
+### Option D: `rsync` (best for repeated transfers)
 
 ```bash
-rsync -av --delete ~/my_ros2_ws/ <username>@<turtlebot_tailscale_ip>:~/my_ros2_ws/
+rsync -av --delete ~/ros2_ws/ <username>@<robot_tailscale_ip>:~/ros2_ws/
 ```
 
-`rsync` only sends changed files, making updates much faster than `scp`.
-
-</details>
-
-### After copying: build and source on the TurtleBot
+### Build on the robot
 
 ```bash
-cd ~/my_ros2_ws
+cd ~/ros2_ws
 colcon build --executor sequential
 source install/setup.bash
 ```
 
----
+Use `--executor sequential` on the robot to avoid overloading the Pi.
 
-## 6. Reference: `aice_sim` Package
+## 10. Reference: `aice_sim`
 
-<details>
-<summary>Expand — complete working package if you are stuck</summary>
-
-A complete working package is provided at [`sim/aice_sim/`](../sim/aice_sim/) in this repository. It implements everything described in sections 3 and 4 and can be built directly with colcon.
-
-```text
-sim/aice_sim/
-├── CMakeLists.txt
-├── package.xml
-├── launch/
-│   └── sim.launch.py
-├── models/
-│   └── v3_block/
-│       ├── meshes/v3_block.stl
-│       ├── model.config
-│       └── model.sdf
-└── worlds/
-    └── world.world
-```
-
-### Building
+The complete package is at [`sim/aice_sim/`](../sim/aice_sim/). It is a working example of everything in this guide and can be built directly with `colcon`.
 
 ```bash
-# From the repo root
-colcon build --base-paths sim/aice_sim
-
-# Or place it under a workspace src/ directory
-cp -r sim/aice_sim ~/my_ros2_ws/src/
-cd ~/my_ros2_ws && colcon build --packages-select aice_sim
-```
-
-### Running
-
-```bash
+cp -r sim/aice_sim ~/ros2_ws/src/
+cd ~/ros2_ws
+colcon build --symlink-install --packages-select aice_sim
 source install/setup.bash
 export TURTLEBOT3_MODEL=waffle_pi
-ros2 launch aice_sim sim.launch.py
+ros2 launch aice_sim sim.launch.py world:=arena
 ```
 
-</details>
+If a world or model fails to load, check the launch terminal for `model://... not found` messages and verify `GZ_SIM_RESOURCE_PATH`. See [Setup Troubleshooting](99_setup_troubleshooting.md) for more.

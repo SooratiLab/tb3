@@ -2,7 +2,7 @@
 
 ## Overview
 
-Now that your TurtleBot3 is set up with Zenoh networking over Tailscale, you can begin developing your own custom applications. ROS 2 organises code into packages—self-contained units that contain nodes, libraries, configurations, and other resources. This guide walks you through creating your first package to start controlling and extending your robot's behaviour.
+Now that your TurtleBot3 is set up with Fast DDS networking over Tailscale, you can begin developing your own custom applications. ROS 2 organises code into packages—self-contained units that contain nodes, libraries, configurations, and other resources. This guide walks you through creating your first package to start controlling and extending your robot's behaviour.
 
 ## ROS 2 Workspaces
 
@@ -36,19 +36,19 @@ source install/setup.bash
 
 ## Where to Run Nodes
 
-A typical setup for TurtleBot3 development is to run your custom application code on your laptop (the remote PC), while only running the robot bringup on the robot itself. This keeps the robot lightweight and allows you to develop and test code without frequently accessing the robot.
+A typical setup for TurtleBot3 development is to run your custom application code in the AICE2011 container, while only running the robot bringup on the robot itself. This keeps the robot lightweight and allows you to develop and test code without frequently accessing the robot.
 
 The `turtlebot3_bringup` package on the robot handles:
 - Launching the robot's hardware drivers
 - Publishing sensor data (camera, LiDAR, IMU)
-- Subscribing to `cmd_vel` for motor control
+- Subscribing to `cmd_vel` (`geometry_msgs/msg/TwistStamped`) for motor control
 
-Your custom nodes on the laptop can then:
+Your custom nodes in the container can then:
 - Subscribe to sensor topics from the robot
 - Process data and make decisions
 - Publish `cmd_vel` commands back to the robot
 
-Both the laptop and robot must be on the same ROS domain and connected via Zenoh for this to work.
+Both the container and the robot must use the same ROS domain and the Fast DDS over Tailscale configuration from [Networking](20_networking.md).
 
 ## Topics, Messages, and QoS
 
@@ -60,7 +60,7 @@ Topics are named buses where nodes exchange messages. A node can **publish** mes
 
 | Topic | Message Type | Description |
 |-------|--------------|-------------|
-| `/cmd_vel` | `geometry_msgs/Twist` | Velocity commands (linear/angular) |
+| `/cmd_vel` | `geometry_msgs/msg/TwistStamped` | Velocity commands (linear/angular) |
 | `/scan` | `sensor_msgs/LaserScan` | LiDAR scan data |
 | `/odom` | `nav_msgs/Odometry` | Odometry (position/velocity) |
 
@@ -74,6 +74,7 @@ QoS controls how messages are delivered. Key policies include:
 For sensors (LiDAR, camera), use `BEST_EFFORT` since old data is less useful. For commands (`cmd_vel`), use `RELIABLE` to ensure commands arrive.
 
 ```python
+from geometry_msgs.msg import TwistStamped
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 qos = QoSProfile(
@@ -82,9 +83,12 @@ qos = QoSProfile(
     depth=10
 )
 
-self.pub = self.create_publisher(Twist, 'cmd_vel', qos)
+self.pub = self.create_publisher(TwistStamped, 'cmd_vel', qos)
 self.sub = self.create_subscription(LaserScan, 'scan', self.scan_callback, qos)
 ```
+
+> [!IMPORTANT]
+> Jazzy publishes `/cmd_vel` as `geometry_msgs/msg/TwistStamped`, not the old `geometry_msgs/msg/Twist`. Set the velocity on `msg.twist.linear` and `msg.twist.angular`.
 
 ## Creating a Python Package with rclpy
 
@@ -95,10 +99,10 @@ This guide uses rclpy, the Python client library for ROS 2.
 
 ### Prerequisites
 
-Ensure you have ROS 2 Humble installed and sourced:
+Ensure you have ROS 2 Jazzy installed and sourced. In the container this is already done for you, but a new shell can always be set up with:
 
 ```bash
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 ```
 
 ### Creating the Package
@@ -369,7 +373,7 @@ ros2 launch my_robot_package my_launch.py
 
 ## ROS 2 Messages
 
-Messages are the way nodes communicate with each other. They define the data structure for topics, services, and actions. ROS 2 comes with many built-in message types, such as `std_msgs/String`, `geometry_msgs/Twist`, and `sensor_msgs/Image`.
+Messages are the way nodes communicate with each other. They define the data structure for topics, services, and actions. ROS 2 comes with many built-in message types, such as `std_msgs/msg/String`, `geometry_msgs/msg/TwistStamped`, and `sensor_msgs/msg/Image`.
 
 ### Using Existing Messages
 
@@ -377,14 +381,15 @@ To use a message in your node, import it and specify the type when creating a pu
 
 ```python
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
 
 class MyNode(Node):
     def __init__(self):
         super().__init__('my_node')
         
         self.pub = self.create_publisher(String, 'chatter', 10)
-        self.sub = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
+        self.cmd_pub = self.create_publisher(TwistStamped, 'cmd_vel', 10)
+        self.sub = self.create_subscription(TwistStamped, 'cmd_vel', self.cmd_vel_callback, 10)
         
         self.timer = self.create_timer(1.0, self.publish_hello)
     
@@ -394,7 +399,9 @@ class MyNode(Node):
         self.pub.publish(msg)
     
     def cmd_vel_callback(self, msg):
-        self.get_logger().info(f'Linear x: {msg.linear.x}, Angular z: {msg.angular.z}')
+        self.get_logger().info(
+            f'Linear x: {msg.twist.linear.x}, Angular z: {msg.twist.angular.z}'
+        )
 ```
 
 ### Creating Custom Messages

@@ -12,7 +12,7 @@ sudo apt update
 sudo apt install -y python3-pip git python3-jinja2 libboost-dev libgnutls28-dev openssl \
         libtiff-dev pybind11-dev qtbase5-dev libqt5core5a libqt5widgets5 cmake python3-yaml \
         python3-ply libglib2.0-dev libgstreamer-plugins-base1.0-dev
-sudo apt install ros-humble-camera-ros
+sudo apt install ros-jazzy-camera-ros
 pip install meson ninja
 ```
 
@@ -37,12 +37,14 @@ Restart the robot and test the camera.
 
 ## Camera Test
 
-On the Turtlebot:
+On the TurtleBot:
 
 ```bash
-export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch turtlebot3_bringup camera.launch.py format:=RGB888 width:=640 height:=480
 ```
+
+If you are connecting to the robot over Tailscale, export the Fast DDS settings from [Networking](20_networking.md) first.
 
 Recommended formats:
 
@@ -51,7 +53,7 @@ BGR888 (64x64 - 3280x2464)
 RGB888 (64x64 - 3280x2464)
 ```
 
-On the Remote PC:
+In the container:
 
 ```bash
 ros2 run rqt_image_view rqt_image_view
@@ -62,7 +64,7 @@ Select /camera/image_raw/compressed.
 > [!INFO]
 > If you receive an error when using the compressed camera topic, install the image transport plugins: 
 >
->`sudo apt install ros-humble-image-transport-plugins`
+>`sudo apt install ros-jazzy-image-transport-plugins`
 
 
 
@@ -73,7 +75,7 @@ Raw image topics are very high bandwidth (approximately 27 MB/s for 640×480 RGB
 Install plugins:
 
 ```bash
-sudo apt install ros-humble-image-transport-plugins
+sudo apt install ros-jazzy-image-transport-plugins
 ```
 
 If you already have a launch file, you can add this node to it:

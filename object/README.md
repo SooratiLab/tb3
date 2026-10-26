@@ -1,7 +1,12 @@
-# Block CAD
+# Object CAD
 
-- The repo has the CAD for the block that will be used in the final competition for the AICE2011 module @ University of Southampton
+CAD for the objects used in the AICE2011 module at the University of Southampton.
+
+## Block (v3)
+
 - `.scad` is the raw design file
 - `.stl` is the rendered mesh
-- The PDF has a dimensional drawing of the block face. All dimensions are in *mm*.
+- `.dxf` and `.pdf` contain the annotated dimensional drawing. All dimensions are in *mm*.
 - The block weighs **45 grams**
+
+Additional object designs will be added here as they are released.

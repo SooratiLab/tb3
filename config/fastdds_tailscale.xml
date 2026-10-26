@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Fast DDS unicast discovery profile for Tailscale.
+
+  Replace PEER_TAILSCALE_IP with the Tailscale IPv4 address of the other
+  device. The same file is used at both ends, but each copy points at the
+  other device:
+
+    robot:      PEER_TAILSCALE_IP = address of the container host
+    container:  PEER_TAILSCALE_IP = address of the robot
+
+  The empty metatrafficUnicastLocatorList locator disables multicast
+  discovery. Do not remove it: SOTON-IoT does not carry multicast.
+-->
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+    <participant profile_name="tailscale_unicast" is_default_profile="true">
+        <rtps>
+            <builtin>
+                <metatrafficUnicastLocatorList>
+                    <locator/>
+                </metatrafficUnicastLocatorList>
+                <initialPeersList>
+                    <locator>
+                        <udpv4>
+                            <address>PEER_TAILSCALE_IP</address>
+                        </udpv4>
+                    </locator>
+                </initialPeersList>
+            </builtin>
+        </rtps>
+    </participant>
+</profiles>

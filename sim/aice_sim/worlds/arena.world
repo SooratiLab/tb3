@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<!--
+  AICE2011 2 m x 2 m arena with a Waffle Pi and one red and one blue block.
+
+  The walls are 1 m high and 0.1 m thick. The blocks use the v3_block mesh
+  scaled from millimetres to metres. Add challenge layers by copying this
+  file and adding models inside the world, or by including this file where
+  the simulator supports it.
+-->
+<sdf version="1.8">
+  <world name="default">
+    <scene>
+      <shadows>0</shadows>
+    </scene>
+
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>0 0 4.5 0 1.5138 0</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>150</iters>
+          <precon_iters>0</precon_iters>
+          <sor>1.400000</sor>
+          <use_dynamic_moi_rescaling>1</use_dynamic_moi_rescaling>
+        </solver>
+        <constraints>
+          <cfm>0.00001</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>2000.000000</contact_max_correcting_vel>
+          <contact_surface_layer>0.01000</contact_surface_layer>
+        </constraints>
+      </ode>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.0 0.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 1 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0.45 0.30 0.15 1</ambient>
+            <diffuse>0.55 0.37 0.18 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -1 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>2 0.1 1</size></box></geometry>
+          <material>
+            <ambient>0.45 0.30 0.15 1</ambient>
+            <diffuse>0.55 0.37 0.18 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_east">
+      <static>true</static>
+      <pose>1 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>0.45 0.30 0.15 1</ambient>
+            <diffuse>0.55 0.37 0.18 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-1 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.1 2 1</size></box></geometry>
+          <material>
+            <ambient>0.45 0.30 0.15 1</ambient>
+            <diffuse>0.55 0.37 0.18 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="v3_block_red">
+      <static>false</static>
+      <pose>0.5 0 0 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.045</mass>
+          <inertia>
+            <ixx>2.7e-5</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>2.7e-5</iyy>
+            <iyz>0</iyz>
+            <izz>2.7e-5</izz>
+          </inertia>
+        </inertial>
+        <visual name="visual">
+          <pose>0 0 0.03 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://v3_block/meshes/v3_block.stl</uri>
+              <scale>0.001 0.001 0.001</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <ambient>0.7 0.05 0.05 1</ambient>
+            <diffuse>0.8 0.1 0.1 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0.03 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://v3_block/meshes/v3_block.stl</uri>
+              <scale>0.001 0.001 0.001</scale>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="v3_block_blue">
+      <static>false</static>
+      <pose>-0.5 0 0 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.045</mass>
+          <inertia>
+            <ixx>2.7e-5</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>2.7e-5</iyy>
+            <iyz>0</iyz>
+            <izz>2.7e-5</izz>
+          </inertia>
+        </inertial>
+        <visual name="visual">
+          <pose>0 0 0.03 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://v3_block/meshes/v3_block.stl</uri>
+              <scale>0.001 0.001 0.001</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <ambient>0.05 0.1 0.7 1</ambient>
+            <diffuse>0.1 0.2 0.8 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0.03 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://v3_block/meshes/v3_block.stl</uri>
+              <scale>0.001 0.001 0.001</scale>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="turtlebot3_waffle_pi">
+      <static>false</static>
+      <pose>0 0 0.1 0 0 0</pose>
+      <include>
+        <uri>model://turtlebot3_waffle_pi</uri>
+      </include>
+    </model>
+  </world>
+</sdf>
